@@ -1,0 +1,19 @@
+{
+  "name": "lifeos-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LifeOS — AI-Orchestrated Personal Productivity Substrate",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev:backend": "npm --prefix apps/backend run start:dev",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

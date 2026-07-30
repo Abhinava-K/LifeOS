@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # Primary Relational Database with pgvector support for AI Memory & Search
+  postgres:
+    image: ankane/pgvector:v0.5.1
+    container_name: lifeos-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-lifeos_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lifeos_secure_pass_2026}
+      POSTGRES_DB: ${POSTGRES_DB:-lifeos_db}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-lifeos_admin}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Session Caching, Token Blacklisting, & BullMQ Queue Processing
+  redis:
+    image: redis:7-alpine
+    container_name: lifeos-redis
+    restart: always
+    command: redis-server --save 60 1 --loglevel notice
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
