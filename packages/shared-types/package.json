@@ -5,6 +5,7 @@
   "types": "src/index.ts",
   "private": true,
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "echo 'No tests specified for shared-types'"
   }
 }

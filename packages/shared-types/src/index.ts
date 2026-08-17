@@ -27,6 +27,52 @@ export interface AuthResponse {
   tokens: Tokens;
 }
 
+export enum UserThemePreference {
+  LIGHT = 'LIGHT',
+  DARK = 'DARK',
+  SYSTEM = 'SYSTEM',
+}
+
+export enum ProfileVisibility {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE',
+}
+
+export interface UserProfile {
+  userId: string;
+  email: string;
+  fullName: string;
+  role: UserRole;
+  avatarUrl: string | null;
+  bio: string | null;
+  phoneNumber: string | null;
+  locale: string;
+  timezone: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserSettings {
+  theme: UserThemePreference;
+  language: string;
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  dailyDigest: boolean;
+}
+
+export interface UserPrivacySettings {
+  profileVisibility: ProfileVisibility;
+  dataProcessingConsent: boolean;
+  marketingConsent: boolean;
+  analyticsConsent: boolean;
+}
+
+export interface UserAccountSnapshot {
+  profile: UserProfile;
+  settings: UserSettings;
+  privacy: UserPrivacySettings;
+}
+
 export interface RegisterRequestDto {
   email: string;
   password: string;

@@ -4,9 +4,11 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { Argon2Service } from './services/argon2.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { UserStoreModule } from '../users/user-store.module';
 
 @Module({
   imports: [
+    UserStoreModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_ACCESS_SECRET || 'lifeos_jwt_secret_key_2026',

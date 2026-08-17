@@ -72,7 +72,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Logout user & revoke refresh token' })
   async logout(@Req() req: Request) {
-    const user = req['user'];
+    const user = (req as any).user;
     await this.authService.logout(user?.userId);
     return {
       success: true,
@@ -88,7 +88,7 @@ export class AuthController {
   async getProfile(@Req() req: Request) {
     return {
       success: true,
-      data: req['user'],
+      data: (req as any).user,
       timestamp: new Date().toISOString(),
     };
   }
