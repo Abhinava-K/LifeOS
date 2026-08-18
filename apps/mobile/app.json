@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "LifeOS",
+    "slug": "lifeos-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "backgroundColor": "#090D16"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ai.lifeos.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#090D16"
+      },
+      "package": "ai.lifeos.mobile"
+    },
+    "plugins": []
+  }
+}
