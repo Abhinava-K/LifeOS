@@ -1,0 +1,265 @@
+// LifeOS — Prisma Database Schema with pgvector
+// Database Layer (REQ-DB, REQ-AUTH, REQ-USER, REQ-PLAN, REQ-NOTE, REQ-EXP, REQ-MEM)
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  PREMIUM
+}
+
+enum ThemePreference {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum TaskPriority {
+  URGENT_IMPORTANT     // Do First (Eisenhower Q1)
+  NOT_URGENT_IMPORTANT // Schedule (Eisenhower Q2)
+  URGENT_NOT_IMPORTANT // Delegate (Eisenhower Q3)
+  NOT_URGENT_NOT_IMPORTANT // Eliminate (Eisenhower Q4)
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ExpenseCategory {
+  FOOD_DINING
+  GROCERIES
+  TRANSPORTATION
+  HOUSING_BILLS
+  ENTERTAINMENT
+  HEALTH_FITNESS
+  EDUCATION_STUDY
+  TECH_SOFTWARE
+  MISCELLANEOUS
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  fullName     String
+  role         UserRole  @default(USER)
+  avatarUrl    String?
+  bio          String?
+  phoneNumber  String?
+  locale       String    @default("en-US")
+  timezone     String    @default("UTC")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relationships
+  settings        UserSettings?
+  privacy         UserPrivacySettings?
+  tasks           Task[]
+  notes           Note[]
+  expenses        Expense[]
+  calendarEvents  CalendarEvent[]
+  habits          Habit[]
+  documents       DocumentVault[]
+  memories        AiMemory[]
+  refreshTokens   RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model UserSettings {
+  id                 String          @id @default(uuid())
+  userId             String          @unique
+  theme              ThemePreference @default(SYSTEM)
+  language           String          @default("en")
+  emailNotifications Boolean         @default(true)
+  pushNotifications  Boolean         @default(true)
+  dailyDigest        Boolean         @default(true)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+model UserPrivacySettings {
+  id                    String     @id @default(uuid())
+  userId                String     @unique
+  profileVisibility     Visibility @default(PRIVATE)
+  dataProcessingConsent Boolean    @default(true)
+  marketingConsent      Boolean    @default(false)
+  analyticsConsent      Boolean    @default(true)
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_privacy_settings")
+}
+
+model Task {
+  id          String       @id @default(uuid())
+  userId      String
+  title       String
+  description String?
+  priority    TaskPriority @default(NOT_URGENT_IMPORTANT)
+  status      TaskStatus   @default(TODO)
+  dueDate     DateTime?
+  completedAt DateTime?
+  tags        String[]     @default([])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([userId, priority])
+  @@map("tasks")
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  content   String   @db.Text
+  tags      String[] @default([])
+  wikilinks String[] @default([])
+  // Vector embedding (1536 dim) for RRF Hybrid search and AI Memory
+  embedding Unsupported("vector(1536)")?
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notes")
+}
+
+model Expense {
+  id          String          @id @default(uuid())
+  userId      String
+  amount      Decimal         @db.Decimal(12, 2)
+  currency    String          @default("USD")
+  category    ExpenseCategory @default(MISCELLANEOUS)
+  merchant    String
+  description String?
+  receiptUrl  String?
+  ocrRawText  String?         @db.Text
+  date        DateTime        @default(now())
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@index([userId, category])
+  @@map("expenses")
+}
+
+model CalendarEvent {
+  id            String   @id @default(uuid())
+  userId        String
+  title         String
+  description   String?
+  location      String?
+  startTime     DateTime
+  endTime       DateTime
+  isAllDay      Boolean  @default(false)
+  isGoogleSync  Boolean  @default(false)
+  googleEventId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startTime])
+  @@map("calendar_events")
+}
+
+model Habit {
+  id                String    @id @default(uuid())
+  userId            String
+  title             String
+  frequency         String    @default("DAILY") // DAILY, WEEKLY
+  targetDaysPerWeek Int       @default(7)
+  currentStreak     Int       @default(0)
+  longestStreak     Int       @default(0)
+  lastCompletedDate DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("habits")
+}
+
+model DocumentVault {
+  id        String   @id @default(uuid())
+  userId    String
+  fileName  String
+  fileUrl   String
+  mimeType  String
+  sizeBytes BigInt
+  summary   String?  @db.Text
+  tags      String[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("document_vault")
+}
+
+model AiMemory {
+  id              String   @id @default(uuid())
+  userId          String
+  content         String   @db.Text
+  category        String   @default("GENERAL") // PREFERENCE, FACT, GOAL, INTERACTION
+  importanceScore Float    @default(0.5)
+  // Vector embedding (1536 dim) for Long-Term AI Memory Recall
+  embedding       Unsupported("vector(1536)")?
+  lastRecalledAt  DateTime?
+  recallCount     Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, category])
+  @@map("ai_memories")
+}
