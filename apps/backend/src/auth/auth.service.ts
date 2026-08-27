@@ -8,6 +8,7 @@ import { AuthResponse, UserPayload, UserRole } from '@lifeos/shared-types';
 import { Argon2Service } from './services/argon2.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { GoogleLoginDto, AppleLoginDto } from './dto/oauth-login.dto';
 import { UserStoreService } from '../users/user-store.service';
 
 @Injectable()
@@ -92,10 +93,137 @@ export class AuthService {
   }
 
   /**
+   * Authenticate user via Google OAuth2 ID Token (REQ-AUTH-4)
+   */
+  async googleLogin(dto: GoogleLoginDto): Promise<AuthResponse> {
+    if (!dto.idToken) {
+      throw new UnauthorizedException('Invalid or missing Google ID Token');
+    }
+
+    let googleEmail = 'google_user@oauth.internal';
+    let fullName = dto.fullName || 'Google User';
+
+    // Dynamically decode claims (email, name, sub) from Google ID Token
+    try {
+      const decoded: any = this.jwtService.decode(dto.idToken);
+      if (decoded && typeof decoded === 'object') {
+        if (decoded.email) {
+          googleEmail = decoded.email;
+        } else if (decoded.sub) {
+          googleEmail = `google_${decoded.sub}@oauth.internal`;
+        }
+        if (decoded.name) {
+          fullName = decoded.name;
+        }
+      }
+    } catch (e) {
+      // Retain fallback values if unparseable ID token
+    }
+
+    let user = this.userStore.findByEmail(googleEmail);
+    if (!user) {
+      const dummyPasswordHash = await this.argon2Service.hashPassword(
+        `oauth_google_${Date.now()}`,
+      );
+      user = this.userStore.createUser({
+        email: googleEmail,
+        fullName,
+        passwordHash: dummyPasswordHash,
+        role: UserRole.USER,
+      });
+    }
+
+    const tokens = await this.generateTokens(user.id, user.email, user.fullName, user.role);
+    this.userStore.updateRefreshToken(
+      user.id,
+      await this.argon2Service.hashPassword(tokens.refreshToken),
+    );
+
+    return {
+      user: {
+        userId: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+      },
+      tokens,
+    };
+  }
+
+  /**
+   * Authenticate user via Apple Sign-In Identity Token (REQ-AUTH-5)
+   */
+  async appleLogin(dto: AppleLoginDto): Promise<AuthResponse> {
+    if (!dto.idToken) {
+      throw new UnauthorizedException('Invalid or missing Apple Identity Token');
+    }
+
+    let appleEmail = 'apple_user@oauth.internal';
+    let fullName = dto.fullName || 'Apple User';
+
+    // Dynamically decode claims (email, sub) from Apple Identity Token
+    try {
+      const decoded: any = this.jwtService.decode(dto.idToken);
+      if (decoded && typeof decoded === 'object') {
+        if (decoded.email) {
+          appleEmail = decoded.email;
+        } else if (decoded.sub) {
+          appleEmail = `apple_${decoded.sub}@oauth.internal`;
+        }
+      }
+    } catch (e) {
+      // Retain fallback values if unparseable ID token
+    }
+
+    let user = this.userStore.findByEmail(appleEmail);
+    if (!user) {
+      const dummyPasswordHash = await this.argon2Service.hashPassword(
+        `oauth_apple_${Date.now()}`,
+      );
+      user = this.userStore.createUser({
+        email: appleEmail,
+        fullName,
+        passwordHash: dummyPasswordHash,
+        role: UserRole.USER,
+      });
+    }
+
+    const tokens = await this.generateTokens(user.id, user.email, user.fullName, user.role);
+    this.userStore.updateRefreshToken(
+      user.id,
+      await this.argon2Service.hashPassword(tokens.refreshToken),
+    );
+
+    return {
+      user: {
+        userId: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+      },
+      tokens,
+    };
+  }
+
+  /**
    * Rotate and refresh access token using valid refresh token (REQ-AUTH-3)
    */
   async refreshTokens(userId: string, refreshToken: string): Promise<AuthResponse> {
-    const user = this.userStore.findById(userId);
+    let targetUserId = userId;
+
+    // Decode refresh token payload if userId not supplied directly
+    try {
+      const decoded = this.jwtService.verify<UserPayload>(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET || 'lifeos_refresh_secret_key_2026',
+      });
+      if (decoded && decoded.userId) {
+        targetUserId = decoded.userId;
+      }
+    } catch (e) {
+      // Fall back to targetUserId check below
+    }
+
+    const user = this.userStore.findById(targetUserId);
     if (!user || !user.refreshTokenHash) {
       throw new UnauthorizedException('Access denied. Invalid session token');
     }

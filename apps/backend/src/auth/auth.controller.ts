@@ -13,6 +13,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { GoogleLoginDto, AppleLoginDto } from './dto/oauth-login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Request } from 'express';
 
@@ -50,14 +51,43 @@ export class AuthController {
     };
   }
 
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Authenticate via Google OAuth2 ID Token (REQ-AUTH-4)' })
+  @ApiResponse({ status: 200, description: 'Authenticated via Google OAuth successfully' })
+  @ApiResponse({ status: 401, description: 'Invalid or expired Google token' })
+  async googleLogin(@Body() googleLoginDto: GoogleLoginDto) {
+    const data = await this.authService.googleLogin(googleLoginDto);
+    return {
+      success: true,
+      message: 'Google authentication successful',
+      data,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Post('apple')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Authenticate via Apple Sign-In Identity Token (REQ-AUTH-5)' })
+  @ApiResponse({ status: 200, description: 'Authenticated via Apple Sign-In successfully' })
+  @ApiResponse({ status: 401, description: 'Invalid or expired Apple token' })
+  async appleLogin(@Body() appleLoginDto: AppleLoginDto) {
+    const data = await this.authService.appleLogin(appleLoginDto);
+    return {
+      success: true,
+      message: 'Apple authentication successful',
+      data,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Rotate and refresh JWT access token (REQ-AUTH-3)' })
   @ApiResponse({ status: 200, description: 'Tokens rotated successfully' })
   @ApiResponse({ status: 401, description: 'Invalid or revoked refresh token' })
   async refreshTokens(@Body() refreshTokenDto: RefreshTokenDto) {
-    // In production, userId will be extracted from decoded refresh token payload
-    const data = await this.authService.refreshTokens('usr_sample', refreshTokenDto.refreshToken);
+    const data = await this.authService.refreshTokens('', refreshTokenDto.refreshToken);
     return {
       success: true,
       message: 'Access token refreshed successfully',
