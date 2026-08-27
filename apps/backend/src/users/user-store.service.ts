@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
+  CalendarViewMode,
+  GdprExportBundle,
   ProfileVisibility,
   UserAccountSnapshot,
   UserPayload,
@@ -21,6 +23,7 @@ export interface StoredUser {
   phoneNumber: string | null;
   locale: string;
   timezone: string;
+  currencyCode: string;
   settings: UserSettings;
   privacy: UserPrivacySettings;
   createdAt: string;
@@ -42,6 +45,7 @@ export interface UpdateProfileInput {
   phoneNumber?: string | null;
   locale?: string;
   timezone?: string;
+  currencyCode?: string;
 }
 
 export interface UpdateSettingsInput {
@@ -50,6 +54,8 @@ export interface UpdateSettingsInput {
   emailNotifications?: boolean;
   pushNotifications?: boolean;
   dailyDigest?: boolean;
+  notificationSchedule?: string;
+  defaultCalendarView?: CalendarViewMode;
 }
 
 export interface UpdatePrivacyInput {
@@ -87,18 +93,22 @@ export class UserStoreService {
       phoneNumber: null,
       locale: 'en-US',
       timezone: 'UTC',
+      currencyCode: 'USD',
       settings: {
         theme: UserThemePreference.SYSTEM,
         language: 'en-US',
         emailNotifications: true,
         pushNotifications: true,
         dailyDigest: false,
+        notificationSchedule: '08:00',
+        defaultCalendarView: 'MONTH',
       },
       privacy: {
         profileVisibility: ProfileVisibility.PRIVATE,
         dataProcessingConsent: true,
         marketingConsent: false,
         analyticsConsent: false,
+        updatedAt: now,
       },
       createdAt: now,
       updatedAt: now,
@@ -144,6 +154,9 @@ export class UserStoreService {
     if (typeof input.timezone === 'string') {
       user.timezone = input.timezone;
     }
+    if (typeof input.currencyCode === 'string') {
+      user.currencyCode = input.currencyCode;
+    }
 
     user.updatedAt = new Date().toISOString();
     return user;
@@ -171,6 +184,12 @@ export class UserStoreService {
     if (typeof input.dailyDigest === 'boolean') {
       user.settings.dailyDigest = input.dailyDigest;
     }
+    if (typeof input.notificationSchedule === 'string') {
+      user.settings.notificationSchedule = input.notificationSchedule;
+    }
+    if (input.defaultCalendarView) {
+      user.settings.defaultCalendarView = input.defaultCalendarView;
+    }
 
     user.updatedAt = new Date().toISOString();
     return user;
@@ -182,6 +201,7 @@ export class UserStoreService {
       return undefined;
     }
 
+    const now = new Date().toISOString();
     if (input.profileVisibility) {
       user.privacy.profileVisibility = input.profileVisibility;
     }
@@ -195,7 +215,8 @@ export class UserStoreService {
       user.privacy.analyticsConsent = input.analyticsConsent;
     }
 
-    user.updatedAt = new Date().toISOString();
+    user.privacy.updatedAt = now;
+    user.updatedAt = now;
     return user;
   }
 
@@ -220,6 +241,7 @@ export class UserStoreService {
     user.privacy.dataProcessingConsent = false;
     user.privacy.marketingConsent = false;
     user.privacy.analyticsConsent = false;
+    user.privacy.updatedAt = now;
     user.updatedAt = now;
     return true;
   }
@@ -245,6 +267,7 @@ export class UserStoreService {
         phoneNumber: user.phoneNumber,
         locale: user.locale,
         timezone: user.timezone,
+        currencyCode: user.currencyCode,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
@@ -253,12 +276,17 @@ export class UserStoreService {
     };
   }
 
-  exportUserData(userId: string): UserAccountSnapshot | undefined {
+  exportUserData(userId: string): GdprExportBundle | undefined {
     const user = this.findById(userId);
     if (!user) {
       return undefined;
     }
 
-    return this.toSnapshot(user);
+    return {
+      user: this.toSnapshot(user),
+      exportedAt: new Date().toISOString(),
+      exportScope: ['profile', 'settings', 'privacy-consents', 'activity-ledger'],
+      complianceNotice: 'Generated pursuant to EU GDPR Article 20 Right to Data Portability.',
+    };
   }
 }

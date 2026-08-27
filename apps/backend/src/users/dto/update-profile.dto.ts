@@ -31,4 +31,9 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsString()
   timezone?: string;
+
+  @ApiPropertyOptional({ example: 'USD', description: 'Primary currency code (ISO 4217)' })
+  @IsOptional()
+  @IsString()
+  currencyCode?: string;
 }

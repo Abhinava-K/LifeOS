@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { UserAccountSnapshot, UserPayload } from '@lifeos/shared-types';
+import { GdprExportBundle, UserAccountSnapshot, UserPayload } from '@lifeos/shared-types';
 import {
   UpdatePrivacyInput,
   UpdateProfileInput,
@@ -47,21 +47,13 @@ export class UsersService {
     return this.userStore.toSnapshot(updatedUser);
   }
 
-  exportAccount(userId: string): {
-    user: UserAccountSnapshot;
-    exportedAt: string;
-    exportScope: string[];
-  } {
-    const snapshot = this.userStore.exportUserData(userId);
-    if (!snapshot) {
+  exportAccount(userId: string): GdprExportBundle {
+    const exportBundle = this.userStore.exportUserData(userId);
+    if (!exportBundle) {
       throw new NotFoundException('User account not found');
     }
 
-    return {
-      user: snapshot,
-      exportedAt: new Date().toISOString(),
-      exportScope: ['profile', 'settings', 'privacy-consents'],
-    };
+    return exportBundle;
   }
 
   deleteAccount(userId: string): { deleted: boolean; deletedAt: string } {

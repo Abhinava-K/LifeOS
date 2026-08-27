@@ -38,6 +38,8 @@ export enum ProfileVisibility {
   PRIVATE = 'PRIVATE',
 }
 
+export type CalendarViewMode = 'MONTH' | 'WEEK' | 'DAY';
+
 export interface UserProfile {
   userId: string;
   email: string;
@@ -48,6 +50,7 @@ export interface UserProfile {
   phoneNumber: string | null;
   locale: string;
   timezone: string;
+  currencyCode: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -58,6 +61,8 @@ export interface UserSettings {
   emailNotifications: boolean;
   pushNotifications: boolean;
   dailyDigest: boolean;
+  notificationSchedule: string;
+  defaultCalendarView: CalendarViewMode;
 }
 
 export interface UserPrivacySettings {
@@ -65,12 +70,20 @@ export interface UserPrivacySettings {
   dataProcessingConsent: boolean;
   marketingConsent: boolean;
   analyticsConsent: boolean;
+  updatedAt?: string;
 }
 
 export interface UserAccountSnapshot {
   profile: UserProfile;
   settings: UserSettings;
   privacy: UserPrivacySettings;
+}
+
+export interface GdprExportBundle {
+  user: UserAccountSnapshot;
+  exportedAt: string;
+  exportScope: string[];
+  complianceNotice: string;
 }
 
 export interface RegisterRequestDto {

@@ -51,6 +51,7 @@ describe('UserStoreService', () => {
       phoneNumber: '+1234567890',
       locale: 'en-GB',
       timezone: 'Europe/London',
+      currencyCode: 'EUR',
     });
 
     expect(updated).toBeDefined();
@@ -59,6 +60,7 @@ describe('UserStoreService', () => {
     expect(updated?.phoneNumber).toBe('+1234567890');
     expect(updated?.locale).toBe('en-GB');
     expect(updated?.timezone).toBe('Europe/London');
+    expect(updated?.currencyCode).toBe('EUR');
     expect(updated?.settings.language).toBe('en-GB');
   });
 
@@ -75,6 +77,8 @@ describe('UserStoreService', () => {
       emailNotifications: false,
       pushNotifications: true,
       dailyDigest: true,
+      notificationSchedule: '07:30',
+      defaultCalendarView: 'WEEK',
     });
 
     expect(updated).toBeDefined();
@@ -82,6 +86,8 @@ describe('UserStoreService', () => {
     expect(updated?.settings.emailNotifications).toBe(false);
     expect(updated?.settings.pushNotifications).toBe(true);
     expect(updated?.settings.dailyDigest).toBe(true);
+    expect(updated?.settings.notificationSchedule).toBe('07:30');
+    expect(updated?.settings.defaultCalendarView).toBe('WEEK');
   });
 
   it('should update privacy settings correctly', () => {
@@ -128,7 +134,7 @@ describe('UserStoreService', () => {
     expect(created.privacy.marketingConsent).toBe(false);
   });
 
-  it('should export user data correctly', () => {
+  it('should export user data correctly with GDPR compliance bundle', () => {
     const created = userStoreService.createUser({
       email: 'export@example.com',
       fullName: 'Export User',
@@ -138,9 +144,10 @@ describe('UserStoreService', () => {
 
     const exportData = userStoreService.exportUserData(created.id);
     expect(exportData).toBeDefined();
-    expect(exportData?.profile.email).toBe('export@example.com');
-    expect(exportData?.profile.fullName).toBe('Export User');
-    expect(exportData?.settings).toBeDefined();
-    expect(exportData?.privacy).toBeDefined();
+    expect(exportData?.user.profile.email).toBe('export@example.com');
+    expect(exportData?.user.profile.fullName).toBe('Export User');
+    expect(exportData?.user.settings).toBeDefined();
+    expect(exportData?.user.privacy).toBeDefined();
+    expect(exportData?.complianceNotice).toContain('GDPR Article 20');
   });
 });

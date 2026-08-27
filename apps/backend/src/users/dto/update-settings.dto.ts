@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { UserThemePreference } from '@lifeos/shared-types';
+import { CalendarViewMode, UserThemePreference } from '@lifeos/shared-types';
 import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class UpdateSettingsDto {
@@ -27,4 +27,14 @@ export class UpdateSettingsDto {
   @IsOptional()
   @IsBoolean()
   dailyDigest?: boolean;
+
+  @ApiPropertyOptional({ example: '08:00', description: 'Daily briefing notification time (HH:mm)' })
+  @IsOptional()
+  @IsString()
+  notificationSchedule?: string;
+
+  @ApiPropertyOptional({ example: 'MONTH', description: 'Default calendar view mode' })
+  @IsOptional()
+  @IsString()
+  defaultCalendarView?: CalendarViewMode;
 }
