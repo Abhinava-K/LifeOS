@@ -78,7 +78,7 @@
 | :--- | :--- | :--- | :--- | :---: | :--- |
 | **3.1** | NestJS AI Gateway (REQ-AIGW) | Abhinava K | Aug 22 – Sep 01 | ⏳ Open | Intent classifier, context builder, token logging, LLM router |
 | **3.2** | Python CrewAI Integration (FastAPI) | Parth P | Aug 28 – Sep 07 | ⏳ Open | CrewAI multi-agent orchestration service (Gemini / Groq) |
-| **3.3** | Multimodal AI Screen (AIScreen) | Jahaan S | Sep 03 – Sep 11 | ⏳ Open | Chat, Voice interface, Camera upload & streaming UI |
+| **3.3** | Multimodal AI Screen (AIScreen) | Jahaan S | Sep 03 – Sep 11 | ✅ Done | Chat, Voice interface, Camera upload & streaming UI |
 
 ---
 
