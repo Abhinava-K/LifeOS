@@ -114,13 +114,13 @@ export interface StandardApiResponse<T> {
   timestamp: string;
 }
 
-// ─── Domain Models (Tasks, Notes, Expenses, Habits, Calendar, AI) ───
+// ─── Domain Models (Tasks, Notes, Expenses, Habits, Calendar, Goals, AI) ───
 
 export enum TaskPriority {
-  URGENT_IMPORTANT = 'URGENT_IMPORTANT',
-  NOT_URGENT_IMPORTANT = 'NOT_URGENT_IMPORTANT',
-  URGENT_NOT_IMPORTANT = 'URGENT_NOT_IMPORTANT',
-  NOT_URGENT_NOT_IMPORTANT = 'NOT_URGENT_NOT_IMPORTANT',
+  URGENT_IMPORTANT = 'URGENT_IMPORTANT',         // Quadrant 1: Do First
+  NOT_URGENT_IMPORTANT = 'NOT_URGENT_IMPORTANT', // Quadrant 2: Schedule
+  URGENT_NOT_IMPORTANT = 'URGENT_NOT_IMPORTANT', // Quadrant 3: Delegate
+  NOT_URGENT_NOT_IMPORTANT = 'NOT_URGENT_NOT_IMPORTANT', // Quadrant 4: Eliminate
 }
 
 export enum TaskStatus {
@@ -128,6 +128,12 @@ export enum TaskStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
   CANCELLED = 'CANCELLED',
+}
+
+export interface TaskChecklistItem {
+  id: string;
+  title: string;
+  isCompleted: boolean;
 }
 
 export interface TaskDto {
@@ -138,10 +144,177 @@ export interface TaskDto {
   priority: TaskPriority;
   status: TaskStatus;
   dueDate?: string | null;
+  estimatedDurationMinutes?: number | null;
   completedAt?: string | null;
   tags: string[];
+  checklist?: TaskChecklistItem[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CreateTaskDto {
+  title: string;
+  description?: string;
+  priority?: TaskPriority;
+  status?: TaskStatus;
+  dueDate?: string;
+  estimatedDurationMinutes?: number;
+  tags?: string[];
+  checklist?: { title: string; isCompleted?: boolean }[];
+}
+
+export interface UpdateTaskDto {
+  title?: string;
+  description?: string;
+  priority?: TaskPriority;
+  status?: TaskStatus;
+  dueDate?: string | null;
+  estimatedDurationMinutes?: number | null;
+  tags?: string[];
+  checklist?: TaskChecklistItem[];
+}
+
+export interface CalendarEventDto {
+  id: string;
+  userId: string;
+  title: string;
+  description?: string | null;
+  location?: string | null;
+  startTime: string;
+  endTime: string;
+  isAllDay: boolean;
+  categoryColor?: string | null;
+  recurrenceRule?: string | null;
+  isGoogleSync: boolean;
+  googleEventId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCalendarEventDto {
+  title: string;
+  description?: string;
+  location?: string;
+  startTime: string;
+  endTime: string;
+  isAllDay?: boolean;
+  categoryColor?: string;
+  recurrenceRule?: string;
+}
+
+export interface UpdateCalendarEventDto {
+  title?: string;
+  description?: string;
+  location?: string;
+  startTime?: string;
+  endTime?: string;
+  isAllDay?: boolean;
+  categoryColor?: string;
+  recurrenceRule?: string;
+}
+
+export interface EventConflictDto {
+  hasConflict: boolean;
+  conflictingEvents: CalendarEventDto[];
+  overlapMinutes: number;
+}
+
+export interface HabitLogDto {
+  id: string;
+  habitId: string;
+  userId: string;
+  completedDate: string; // YYYY-MM-DD
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface HabitDto {
+  id: string;
+  userId: string;
+  title: string;
+  description?: string | null;
+  frequency: 'DAILY' | 'WEEKLY' | 'CUSTOM';
+  targetDaysPerWeek: number;
+  currentStreak: number;
+  longestStreak: number;
+  totalCompletions: number;
+  lastCompletedDate?: string | null;
+  categoryColor?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateHabitDto {
+  title: string;
+  description?: string;
+  frequency?: 'DAILY' | 'WEEKLY' | 'CUSTOM';
+  targetDaysPerWeek?: number;
+  categoryColor?: string;
+}
+
+export interface UpdateHabitDto {
+  title?: string;
+  description?: string;
+  frequency?: 'DAILY' | 'WEEKLY' | 'CUSTOM';
+  targetDaysPerWeek?: number;
+  categoryColor?: string;
+}
+
+export interface HabitAnalyticsDto {
+  habitId: string;
+  title: string;
+  currentStreak: number;
+  longestStreak: number;
+  completionRateLast30Days: number;
+  totalCompletions: number;
+  recentLogs: string[];
+}
+
+export enum GoalCategory {
+  CAREER_STUDY = 'CAREER_STUDY',
+  HEALTH_FITNESS = 'HEALTH_FITNESS',
+  FINANCE = 'FINANCE',
+  PERSONAL_GROWTH = 'PERSONAL_GROWTH',
+}
+
+export interface GoalMilestoneDto {
+  id: string;
+  title: string;
+  isCompleted: boolean;
+  dueDate?: string | null;
+}
+
+export interface GoalDto {
+  id: string;
+  userId: string;
+  title: string;
+  description?: string | null;
+  category: GoalCategory;
+  targetDate: string;
+  progressPercentage: number;
+  milestones: GoalMilestoneDto[];
+  isArchived: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateGoalDto {
+  title: string;
+  description?: string;
+  category?: GoalCategory;
+  targetDate: string;
+  progressPercentage?: number;
+  milestones?: { title: string; isCompleted?: boolean; dueDate?: string }[];
+}
+
+export interface UpdateGoalDto {
+  title?: string;
+  description?: string;
+  category?: GoalCategory;
+  targetDate?: string;
+  progressPercentage?: number;
+  milestones?: GoalMilestoneDto[];
+  isArchived?: boolean;
 }
 
 export interface NoteDto {
@@ -183,32 +356,6 @@ export interface ExpenseDto {
   updatedAt: string;
 }
 
-export interface HabitDto {
-  id: string;
-  userId: string;
-  title: string;
-  frequency: string;
-  targetDaysPerWeek: number;
-  currentStreak: number;
-  longestStreak: number;
-  lastCompletedDate?: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CalendarEventDto {
-  id: string;
-  userId: string;
-  title: string;
-  description?: string | null;
-  location?: string | null;
-  startTime: string;
-  endTime: string;
-  isAllDay: boolean;
-  isGoogleSync: boolean;
-  googleEventId?: string | null;
-}
-
 export interface DailyBriefingDto {
   date: string;
   greeting: string;
@@ -220,10 +367,11 @@ export interface DailyBriefingDto {
     completedToday: number;
     activeStreak: number;
   };
-  budgetSummary: {
+  budgetSummary?: {
     spentThisMonth: number;
     monthlyBudget: number;
     currency: string;
   };
   aiRecommendations: string[];
 }
+
