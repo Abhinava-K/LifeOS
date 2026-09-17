@@ -59,3 +59,35 @@ def test_dispatch_study():
     data = response.json()
     assert data["success"] is True
     assert data["result"]["crew"] == "StudyCrew"
+
+def test_dispatch_notes():
+    payload = {
+        "userId": "usr_test_999",
+        "agentRole": "notes_summarizer",
+        "task": "Summarize lecture note",
+        "parameters": {
+            "title": "Machine Learning Foundations",
+            "content": "Supervised learning algorithms map inputs to outputs. Unsupervised learning discovers hidden patterns in unlabeled data. Deep learning relies on neural network layers [[Deep Learning]]. #ai #ml"
+        }
+    }
+    response = client.post("/api/v1/dispatch", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["result"]["crew"] == "NotesCrew"
+    assert len(data["result"]["extractedWikilinks"]) == 1
+    assert "ai" in data["result"]["extractedTags"]
+
+def test_crews_notes():
+    payload = {
+        "userId": "usr_test_999",
+        "title": "Database Systems",
+        "content": "Relational databases enforce ACID guarantees [[PostgreSQL]]. Indexing optimizes lookup performance. #db #postgres"
+    }
+    response = client.post("/api/v1/crews/notes", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["data"]["crew"] == "NotesCrew"
+    assert len(data["data"]["bulletPoints"]) >= 1
+

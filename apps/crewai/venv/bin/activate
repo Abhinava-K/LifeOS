@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV=/home/parth/coding/database_project/LifeOS/apps/crewai/venv
+VIRTUAL_ENV=/home/parth/coding/software_pro/LifeOS/apps/crewai/venv
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

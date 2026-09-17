@@ -322,12 +322,55 @@ export interface NoteDto {
   userId: string;
   title: string;
   content: string;
+  summary?: string | null;
   tags: string[];
   wikilinks: string[];
   isPinned: boolean;
+  hasEmbedding?: boolean;
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CreateNoteDto {
+  title: string;
+  content: string;
+  tags?: string[];
+  wikilinks?: string[];
+  isPinned?: boolean;
+}
+
+export interface UpdateNoteDto {
+  title?: string;
+  content?: string;
+  tags?: string[];
+  wikilinks?: string[];
+  isPinned?: boolean;
+}
+
+export interface QueryNotesDto {
+  search?: string;
+  tag?: string;
+  isPinned?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+export interface NoteSummaryDto {
+  noteId: string;
+  summary: string;
+  bulletPoints: string[];
+  wordCount: number;
+}
+
+export interface UniversalSearchResultDto {
+  id: string;
+  type: 'NOTE' | 'TASK' | 'EVENT' | 'EXPENSE' | 'MEMORY';
+  title: string;
+  snippet: string;
+  score: number;
+  metadata?: Record<string, any>;
+}
+
 
 export enum ExpenseCategory {
   FOOD_DINING = 'FOOD_DINING',

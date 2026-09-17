@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from app.crews.planner_crew import PlannerCrew
 from app.crews.finance_crew import FinanceCrew
 from app.crews.study_crew import StudyCrew
+from app.crews.notes_crew import NotesCrew
 
 router = APIRouter(prefix="/api/v1", tags=["CrewAI Multi-Agent Service"])
 
@@ -31,6 +32,11 @@ class StudyRequest(BaseModel):
     noteTitle: str
     content: str
     cardCount: Optional[int] = 5
+
+class NotesRequest(BaseModel):
+    userId: str
+    title: str
+    content: str
 
 @router.get("/health")
 def health_check():
@@ -60,6 +66,11 @@ def dispatch_task(request: DispatchRequest):
         note_title = request.parameters.get("noteTitle", "Untitled Note")
         content = request.parameters.get("content", request.task)
         result = crew.generate_flashcards(request.userId, note_title, content)
+    elif "note" in role_lower or "summariz" in role_lower:
+        crew = NotesCrew(provider=request.provider, model=request.model)
+        title = request.parameters.get("title", "Untitled Note")
+        content = request.parameters.get("content", request.task)
+        result = crew.summarize_note(request.userId, title, content)
     else:
         result = {
             "crew": "UniversalCrew",
@@ -96,3 +107,10 @@ def run_study_crew(request: StudyRequest):
     crew = StudyCrew()
     result = crew.generate_flashcards(request.userId, request.noteTitle, request.content, request.cardCount)
     return {"success": True, "data": result}
+
+@router.post("/crews/notes")
+def run_notes_crew(request: NotesRequest):
+    crew = NotesCrew()
+    result = crew.summarize_note(request.userId, request.title, request.content)
+    return {"success": True, "data": result}
+

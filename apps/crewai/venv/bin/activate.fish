@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV /home/parth/coding/database_project/LifeOS/apps/crewai/venv
+set -gx VIRTUAL_ENV /home/parth/coding/software_pro/LifeOS/apps/crewai/venv
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH

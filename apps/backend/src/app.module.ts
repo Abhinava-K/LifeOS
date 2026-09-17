@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { PlannerModule } from './planner/planner.module';
+import { NotesModule } from './notes/notes.module';
 
 @Module({
   imports: [
@@ -17,7 +18,9 @@ import { PlannerModule } from './planner/planner.module';
     UsersModule,
     AiGatewayModule,
     PlannerModule,
+    NotesModule,
   ],
 })
 export class AppModule {}
+
 
