@@ -52,6 +52,11 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "moduleDirectories": [
+      "node_modules",
+      "<rootDir>/../node_modules",
+      "<rootDir>/../../../../node_modules"
+    ],
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],

@@ -4,7 +4,7 @@
  * (REQ-AUTH, REQ-USER, REQ-DB, REQ-PLAN, REQ-NOTE, REQ-EXP, REQ-MEM)
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExpenseCategory = exports.TaskStatus = exports.TaskPriority = exports.ProfileVisibility = exports.UserThemePreference = exports.UserRole = void 0;
+exports.ExpenseCategory = exports.GoalCategory = exports.TaskStatus = exports.TaskPriority = exports.ProfileVisibility = exports.UserThemePreference = exports.UserRole = void 0;
 var UserRole;
 (function (UserRole) {
     UserRole["USER"] = "USER";
@@ -22,7 +22,7 @@ var ProfileVisibility;
     ProfileVisibility["PUBLIC"] = "PUBLIC";
     ProfileVisibility["PRIVATE"] = "PRIVATE";
 })(ProfileVisibility || (exports.ProfileVisibility = ProfileVisibility = {}));
-// ─── Domain Models (Tasks, Notes, Expenses, Habits, Calendar, AI) ───
+// ─── Domain Models (Tasks, Notes, Expenses, Habits, Calendar, Goals, AI) ───
 var TaskPriority;
 (function (TaskPriority) {
     TaskPriority["URGENT_IMPORTANT"] = "URGENT_IMPORTANT";
@@ -37,6 +37,13 @@ var TaskStatus;
     TaskStatus["COMPLETED"] = "COMPLETED";
     TaskStatus["CANCELLED"] = "CANCELLED";
 })(TaskStatus || (exports.TaskStatus = TaskStatus = {}));
+var GoalCategory;
+(function (GoalCategory) {
+    GoalCategory["CAREER_STUDY"] = "CAREER_STUDY";
+    GoalCategory["HEALTH_FITNESS"] = "HEALTH_FITNESS";
+    GoalCategory["FINANCE"] = "FINANCE";
+    GoalCategory["PERSONAL_GROWTH"] = "PERSONAL_GROWTH";
+})(GoalCategory || (exports.GoalCategory = GoalCategory = {}));
 var ExpenseCategory;
 (function (ExpenseCategory) {
     ExpenseCategory["FOOD_DINING"] = "FOOD_DINING";
