@@ -375,3 +375,115 @@ export interface DailyBriefingDto {
     };
     aiRecommendations: string[];
 }
+export interface DocumentDto {
+    id: string;
+    userId: string;
+    fileName: string;
+    fileUrl: string;
+    mimeType: string;
+    sizeBytes: number;
+    summary: string | null;
+    extractedText?: string;
+    tags: string[];
+    createdAt: string;
+    updatedAt: string;
+}
+export interface UploadDocumentDto {
+    fileName: string;
+    fileUrl?: string;
+    mimeType: string;
+    sizeBytes: number;
+    rawText?: string;
+    tags?: string[];
+    summary?: string;
+}
+export interface FlashcardDto {
+    id: string;
+    deckId: string;
+    userId: string;
+    question: string;
+    answer: string;
+    explanation?: string | null;
+    repetitions: number;
+    interval: number;
+    easeFactor: number;
+    dueDate: string;
+    lastReviewedAt?: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
+export interface FlashcardDeckDto {
+    id: string;
+    userId: string;
+    title: string;
+    description?: string | null;
+    tags: string[];
+    totalCards: number;
+    dueCards: number;
+    createdAt: string;
+    updatedAt: string;
+}
+export interface CreateFlashcardDeckDto {
+    title: string;
+    description?: string;
+    tags?: string[];
+}
+export interface CreateFlashcardDto {
+    deckId: string;
+    question: string;
+    answer: string;
+    explanation?: string;
+}
+export interface ReviewFlashcardDto {
+    cardId: string;
+    recallScore: number;
+}
+export interface Sm2CalculationResult {
+    cardId: string;
+    recallScore: number;
+    repetitions: number;
+    interval: number;
+    easeFactor: number;
+    dueDate: string;
+    nextReviewInDays: number;
+}
+export interface GenerateFlashcardsDto {
+    sourceText: string;
+    noteTitle?: string;
+    deckTitle?: string;
+    cardCount?: number;
+}
+export interface QuizQuestionDto {
+    id: string;
+    question: string;
+    options: string[];
+    correctOptionIndex: number;
+    explanation: string;
+}
+export interface QuizDto {
+    id: string;
+    title: string;
+    topic: string;
+    questions: QuizQuestionDto[];
+    totalQuestions: number;
+    createdAt: string;
+}
+export interface SubmitQuizDto {
+    quizId: string;
+    answers: Record<string, number>;
+}
+export interface QuizResultDto {
+    quizId: string;
+    score: number;
+    totalQuestions: number;
+    percentage: number;
+    passed: boolean;
+    breakdown: {
+        questionId: string;
+        question: string;
+        selectedOptionIndex: number;
+        correctOptionIndex: number;
+        isCorrect: boolean;
+        explanation: string;
+    }[];
+}
