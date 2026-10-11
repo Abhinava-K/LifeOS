@@ -1,9 +1,10 @@
-import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
+import { Injectable, Logger, Optional, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Observable } from 'rxjs';
 import { ChatPromptDto, LlmProvider } from '../dto/chat-prompt.dto';
 import { AgentDispatchDto } from '../dto/agent-dispatch.dto';
 import { ChatMessage, SessionManagerService } from './session-manager.service';
+import { MemoryService } from '../../memory/services/memory.service';
 
 export interface AiCompletionResult {
   sessionId: string;
@@ -28,6 +29,7 @@ export class AiRouterService {
   constructor(
     private readonly configService: ConfigService,
     private readonly sessionManager: SessionManagerService,
+    @Optional() private readonly memoryService?: MemoryService,
   ) {}
 
   getAvailableProviders(): ProviderStatus[] {
@@ -66,8 +68,26 @@ export class AiRouterService {
     let responseContent: string;
     let usedModel = dto.model || this.getDefaultModel(selectedProvider);
 
+    // Long-Term Memory Recall Injection (REQ-MEM)
+    let enrichedSystemPrompt = dto.systemPrompt;
+    if (this.memoryService) {
+      try {
+        const recall = await this.memoryService.recallMemories(userId, {
+          query: dto.message,
+          limit: 3,
+        });
+        if (recall.formattedContext) {
+          enrichedSystemPrompt = enrichedSystemPrompt
+            ? `${recall.formattedContext}\n\n${enrichedSystemPrompt}`
+            : recall.formattedContext;
+        }
+      } catch (err: any) {
+        this.logger.warn(`Long-term memory recall omitted: ${err.message}`);
+      }
+    }
+
     try {
-      responseContent = await this.callProviderApi(selectedProvider, usedModel, dto.message, history, dto.systemPrompt);
+      responseContent = await this.callProviderApi(selectedProvider, usedModel, dto.message, history, enrichedSystemPrompt);
     } catch (error) {
       this.logger.warn(
         `Primary provider [${selectedProvider}] failed: ${(error as Error).message}. Attempting fallback to Groq...`,
@@ -75,7 +95,7 @@ export class AiRouterService {
       selectedProvider = LlmProvider.GROQ;
       usedModel = 'llama-3.3-70b-versatile';
       try {
-        responseContent = await this.callProviderApi(selectedProvider, usedModel, dto.message, history, dto.systemPrompt);
+        responseContent = await this.callProviderApi(selectedProvider, usedModel, dto.message, history, enrichedSystemPrompt);
       } catch (fallbackError) {
         this.logger.warn(`Fallback to Groq failed. Using resilient local synthetic engine.`);
         selectedProvider = LlmProvider.GEMINI;

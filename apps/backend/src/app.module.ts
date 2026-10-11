@@ -5,8 +5,11 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { DocumentsModule } from './documents/documents.module';
 import { ExpensesModule } from './expenses/expenses.module';
+import { GoogleSyncModule } from './google-sync/google-sync.module';
+import { MemoryModule } from './memory/memory.module';
 import { NotesModule } from './notes/notes.module';
 import { PlannerModule } from './planner/planner.module';
+import { SearchModule } from './search/search.module';
 import { StudyModule } from './study/study.module';
 import { UsersModule } from './users/users.module';
 
@@ -25,6 +28,9 @@ import { UsersModule } from './users/users.module';
     NotesModule,
     DocumentsModule,
     StudyModule,
+    MemoryModule,
+    SearchModule,
+    GoogleSyncModule,
   ],
 })
 export class AppModule {}

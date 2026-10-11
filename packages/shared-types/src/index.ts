@@ -551,4 +551,171 @@ export interface QuizResultDto {
   }[];
 }
 
+// ==========================================
+// Phase 5: Long-Term Memory Subsystem (REQ-MEM)
+// ==========================================
+
+export enum MemoryCategory {
+  FACT = 'FACT',
+  PREFERENCE = 'PREFERENCE',
+  EPISODIC = 'EPISODIC',
+  GOAL = 'GOAL',
+  INTERACTION = 'INTERACTION',
+}
+
+export interface MemoryItemDto {
+  id: string;
+  userId: string;
+  category: MemoryCategory;
+  content: string;
+  importance: number; // 1 to 10
+  accessCount: number;
+  lastAccessedAt: string;
+  embedding?: number[];
+  tags: string[];
+  metadata?: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateMemoryDto {
+  category?: MemoryCategory;
+  content: string;
+  importance?: number;
+  tags?: string[];
+  metadata?: Record<string, any>;
+}
+
+export interface RecallMemoryDto {
+  query: string;
+  minImportance?: number;
+  limit?: number;
+  categories?: MemoryCategory[];
+}
+
+export interface RecalledMemoryItemDto extends MemoryItemDto {
+  similarityScore: number;
+  recencyScore: number;
+  combinedScore: number;
+}
+
+export interface MemoryRecallResultDto {
+  query: string;
+  totalFound: number;
+  memories: RecalledMemoryItemDto[];
+  formattedContext: string;
+}
+
+export interface MemoryStatsDto {
+  totalMemories: number;
+  categoryBreakdown: Record<string, number>;
+  avgImportance: number;
+  mostAccessedMemories: MemoryItemDto[];
+}
+
+// ==========================================
+// Phase 5: Universal Hybrid Search (REQ-SRCH)
+// ==========================================
+
+export enum SearchEntityType {
+  NOTE = 'NOTE',
+  TASK = 'TASK',
+  EVENT = 'EVENT',
+  EXPENSE = 'EXPENSE',
+  DOCUMENT = 'DOCUMENT',
+  FLASHCARD = 'FLASHCARD',
+}
+
+export interface SearchResultItemDto {
+  id: string;
+  type: SearchEntityType;
+  title: string;
+  snippet: string;
+  score: number;
+  lexicalRank?: number;
+  vectorRank?: number;
+  rrfScore?: number;
+  createdAt?: string;
+  urlOrRoute?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface SearchQueryDto {
+  query: string;
+  types?: SearchEntityType[];
+  limit?: number;
+  offset?: number;
+  minScore?: number;
+  rrfConstant?: number;
+}
+
+export interface HybridSearchResponseDto {
+  query: string;
+  totalMatches: number;
+  results: SearchResultItemDto[];
+  executionTimeMs: number;
+  appliedTypes: SearchEntityType[];
+}
+
+// ==========================================
+// Phase 5: Google Workspace Integration (REQ-GGL)
+// ==========================================
+
+export enum GoogleServiceType {
+  CALENDAR = 'CALENDAR',
+  GMAIL = 'GMAIL',
+  DRIVE = 'DRIVE',
+  CONTACTS = 'CONTACTS',
+}
+
+export enum GoogleSyncStatus {
+  CONNECTED = 'CONNECTED',
+  DISCONNECTED = 'DISCONNECTED',
+  SYNCING = 'SYNCING',
+  ERROR = 'ERROR',
+}
+
+export interface GoogleConnectionStatusDto {
+  isConnected: boolean;
+  email?: string | null;
+  status: GoogleSyncStatus;
+  lastSyncAt?: string | null;
+  enabledServices: GoogleServiceType[];
+  syncErrors?: string[];
+}
+
+export interface GoogleConnectDto {
+  authCode?: string;
+  email?: string;
+  scopes?: string[];
+}
+
+export interface GoogleSyncRequestDto {
+  services?: GoogleServiceType[];
+  forceFullSync?: boolean;
+}
+
+export interface GoogleSyncResultDto {
+  jobId: string;
+  status: 'SUCCESS' | 'PARTIAL' | 'FAILED';
+  syncedItemsCount: {
+    calendar: number;
+    emails: number;
+    drive: number;
+    contacts: number;
+  };
+  timestamp: string;
+  durationMs: number;
+  message: string;
+}
+
+export interface GoogleSyncLogDto {
+  id: string;
+  timestamp: string;
+  service: GoogleServiceType;
+  status: 'SUCCESS' | 'FAILED';
+  itemsSynced: number;
+  details?: string;
+}
+
 

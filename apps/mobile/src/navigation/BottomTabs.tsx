@@ -4,6 +4,7 @@ import { Text } from 'react-native';
 import { RootTabParamList } from './types';
 import { HomeScreen } from '../screens/HomeScreen';
 import { AIScreen } from '../screens/AIScreen';
+import { SearchScreen } from '../screens/SearchScreen';
 import { PlannerScreen } from '../screens/PlannerScreen';
 import { LibraryScreen } from '../screens/LibraryScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
@@ -48,6 +49,14 @@ export const BottomTabs: React.FC = () => {
         options={{
           tabBarLabel: 'AI Brain',
           tabBarIcon: () => <Text style={{ fontSize: 18 }}>🤖</Text>,
+        }}
+      />
+      <Tab.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{
+          tabBarLabel: 'Search',
+          tabBarIcon: () => <Text style={{ fontSize: 18 }}>🔍</Text>,
         }}
       />
       <Tab.Screen

@@ -4,7 +4,7 @@
  * (REQ-AUTH, REQ-USER, REQ-DB, REQ-PLAN, REQ-NOTE, REQ-EXP, REQ-MEM)
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExpenseCategory = exports.GoalCategory = exports.TaskStatus = exports.TaskPriority = exports.ProfileVisibility = exports.UserThemePreference = exports.UserRole = void 0;
+exports.GoogleSyncStatus = exports.GoogleServiceType = exports.SearchEntityType = exports.MemoryCategory = exports.ExpenseCategory = exports.GoalCategory = exports.TaskStatus = exports.TaskPriority = exports.ProfileVisibility = exports.UserThemePreference = exports.UserRole = void 0;
 var UserRole;
 (function (UserRole) {
     UserRole["USER"] = "USER";
@@ -56,3 +56,43 @@ var ExpenseCategory;
     ExpenseCategory["TECH_SOFTWARE"] = "TECH_SOFTWARE";
     ExpenseCategory["MISCELLANEOUS"] = "MISCELLANEOUS";
 })(ExpenseCategory || (exports.ExpenseCategory = ExpenseCategory = {}));
+// ==========================================
+// Phase 5: Long-Term Memory Subsystem (REQ-MEM)
+// ==========================================
+var MemoryCategory;
+(function (MemoryCategory) {
+    MemoryCategory["FACT"] = "FACT";
+    MemoryCategory["PREFERENCE"] = "PREFERENCE";
+    MemoryCategory["EPISODIC"] = "EPISODIC";
+    MemoryCategory["GOAL"] = "GOAL";
+    MemoryCategory["INTERACTION"] = "INTERACTION";
+})(MemoryCategory || (exports.MemoryCategory = MemoryCategory = {}));
+// ==========================================
+// Phase 5: Universal Hybrid Search (REQ-SRCH)
+// ==========================================
+var SearchEntityType;
+(function (SearchEntityType) {
+    SearchEntityType["NOTE"] = "NOTE";
+    SearchEntityType["TASK"] = "TASK";
+    SearchEntityType["EVENT"] = "EVENT";
+    SearchEntityType["EXPENSE"] = "EXPENSE";
+    SearchEntityType["DOCUMENT"] = "DOCUMENT";
+    SearchEntityType["FLASHCARD"] = "FLASHCARD";
+})(SearchEntityType || (exports.SearchEntityType = SearchEntityType = {}));
+// ==========================================
+// Phase 5: Google Workspace Integration (REQ-GGL)
+// ==========================================
+var GoogleServiceType;
+(function (GoogleServiceType) {
+    GoogleServiceType["CALENDAR"] = "CALENDAR";
+    GoogleServiceType["GMAIL"] = "GMAIL";
+    GoogleServiceType["DRIVE"] = "DRIVE";
+    GoogleServiceType["CONTACTS"] = "CONTACTS";
+})(GoogleServiceType || (exports.GoogleServiceType = GoogleServiceType = {}));
+var GoogleSyncStatus;
+(function (GoogleSyncStatus) {
+    GoogleSyncStatus["CONNECTED"] = "CONNECTED";
+    GoogleSyncStatus["DISCONNECTED"] = "DISCONNECTED";
+    GoogleSyncStatus["SYNCING"] = "SYNCING";
+    GoogleSyncStatus["ERROR"] = "ERROR";
+})(GoogleSyncStatus || (exports.GoogleSyncStatus = GoogleSyncStatus = {}));
