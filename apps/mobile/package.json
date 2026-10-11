@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "build": "tsc --noEmit -p tsconfig.json",
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~18.2.45",
+    "@types/react-native": "^0.73.0",
     "typescript": "^5.3.3"
   }
 }

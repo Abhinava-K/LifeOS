@@ -10,6 +10,7 @@ export interface ThemeColors {
   primaryLight: string;
   accent: string;
   text: string;
+  textSecondary: string;
   textMuted: string;
   success: string;
   warning: string;
@@ -25,6 +26,7 @@ export const darkPalette: ThemeColors = {
   primaryLight: '#818CF8',
   accent: '#10B981',
   text: '#F9FAFB',
+  textSecondary: '#D1D5DB',
   textMuted: '#9CA3AF',
   success: '#34D399',
   warning: '#FBBF24',
@@ -40,6 +42,7 @@ export const lightPalette: ThemeColors = {
   primaryLight: '#6366F1',
   accent: '#059669',
   text: '#111827',
+  textSecondary: '#4B5563',
   textMuted: '#6B7280',
   success: '#10B981',
   warning: '#D97706',

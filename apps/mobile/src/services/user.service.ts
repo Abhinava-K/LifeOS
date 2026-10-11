@@ -5,6 +5,7 @@ import {
   UserSettings,
   UserPrivacySettings,
   StandardApiResponse,
+  GdprExportBundle,
 } from '@lifeos/shared-types';
 
 export const userService = {
@@ -28,8 +29,8 @@ export const userService = {
     return response.data.data!;
   },
 
-  async exportUserData(): Promise<UserAccountSnapshot> {
-    const response = await apiClient.get<StandardApiResponse<UserAccountSnapshot>>('/users/me/export');
+  async exportUserData(): Promise<GdprExportBundle> {
+    const response = await apiClient.get<StandardApiResponse<GdprExportBundle>>('/users/me/export');
     return response.data.data!;
   },
 

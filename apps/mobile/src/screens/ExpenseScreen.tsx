@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
   expenseRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   merchantTitle: { fontSize: 15, fontWeight: '700' },
   expenseCategory: { fontSize: 12, marginTop: 2 },
-  expenseDesc: { fontSize: 11, marginTop: 2, italic: true },
+  expenseDesc: { fontSize: 11, marginTop: 2, fontStyle: 'italic' },
   expenseAmount: { fontSize: 16, fontWeight: '800' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', padding: 20 },
   modalCard: { borderRadius: 18, borderWidth: 1, padding: 20 },
