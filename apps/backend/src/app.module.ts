@@ -12,6 +12,7 @@ import { PlannerModule } from './planner/planner.module';
 import { SearchModule } from './search/search.module';
 import { StudyModule } from './study/study.module';
 import { UsersModule } from './users/users.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { UsersModule } from './users/users.module';
     MemoryModule,
     SearchModule,
     GoogleSyncModule,
+    HealthModule,
   ],
 })
 export class AppModule {}

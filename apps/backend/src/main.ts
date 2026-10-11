@@ -19,15 +19,26 @@ async function bootstrap() {
   // Set Global REST API Prefix
   app.setGlobalPrefix('api/v1');
 
-  // Swagger OpenAPI Specification Baseline (IEEE SRS REQ-AUTH & Gateway Specs)
+  // Swagger OpenAPI Specification (IEEE 830 SRS Complete Coverage)
   const config = new DocumentBuilder()
     .setTitle('LifeOS Modular Monolith Backend API')
     .setDescription(
-      'REST API contracts and OpenAPI specifications for LifeOS Personal Life Management Platform.',
+      'REST API contracts, OpenAPI specifications, and subsystem documentation for LifeOS Personal Life Management Platform (Phases 1-6 Complete).',
     )
     .setVersion('1.0.0')
-    .addBearerAuth()
-    .addTag('Authentication Engine (REQ-AUTH)')
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'JWT-Auth')
+    .addTag('System Diagnostics & Health (Phase 6: REQ-NFR)', 'Subsystem readiness, uptime, and latency benchmarks')
+    .addTag('Authentication Engine (REQ-AUTH)', 'OAuth2, JWT authentication, and Argon2id security')
+    .addTag('User Management & GDPR (REQ-USER)', 'User profiles, settings, and GDPR Art. 17/20 data portability')
+    .addTag('AI Gateway & Multi-Agent (REQ-AIGW)', 'Unified LLM routing, SSE streaming, and CrewAI delegation')
+    .addTag('Planner Subsystem (REQ-PLAN)', 'Tasks, calendar time blocking, habits, and daily briefings')
+    .addTag('Notes & Knowledge Base (REQ-NOTE)', 'Markdown notes vault and bi-directional graph linking')
+    .addTag('Expense Engine & OCR (REQ-EXP)', 'Receipt OCR data extraction and spend analytics')
+    .addTag('Document Vault & Storage (REQ-DOC)', '25MB vault, document indexing, and PDF storage')
+    .addTag('Study Hub & Flashcards (REQ-STDY)', 'SuperMemo-2 (SM-2) spaced repetition algorithm and quiz engine')
+    .addTag('Long-Term Memory Vault (REQ-MEM)', '768-dim semantic recall, recency decay, and prompt injection')
+    .addTag('Universal Hybrid Search (REQ-SRCH)', 'Reciprocal Rank Fusion (RRF, k=60) across all entities')
+    .addTag('Google Workspace Sync (REQ-GGL)', 'Calendar, Gmail, Drive, and Contacts bi-directional sync')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
