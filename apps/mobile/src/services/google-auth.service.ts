@@ -12,25 +12,33 @@ export interface GoogleUserProfile {
   verifiedEmail?: boolean;
 }
 
-// Configurable client ID via environment variable or default
-const GOOGLE_CLIENT_ID =
-  process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID ||
-  '798835948924-production.apps.googleusercontent.com';
+// Configurable client ID via environment variable
+const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID || '';
 
 export const googleAuthService = {
+  /**
+   * Returns true if a valid Google Cloud Client ID is configured in environment
+   */
+  hasConfiguredClientId(): boolean {
+    return Boolean(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID.endsWith('.apps.googleusercontent.com'));
+  },
+
   /**
    * Launch official Google OAuth2 sign-in session
    */
   async signIn(): Promise<GoogleUserProfile | null> {
+    if (!this.hasConfiguredClientId()) {
+      // Do not launch broken OAuth URL if GCP Client ID is not configured
+      return null;
+    }
+
     try {
       const state = await Crypto.digestStringAsync(
         Crypto.CryptoDigestAlgorithm.SHA256,
         Math.random().toString(),
       );
 
-      // In Expo, the standard auth redirect uri
       const redirectUri = 'https://auth.expo.io/@lifeos/mobile';
-
       const scope = encodeURIComponent('openid profile email');
       const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(
         redirectUri,
@@ -39,7 +47,6 @@ export const googleAuthService = {
       const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
 
       if (result.type === 'success' && result.url) {
-        // Parse access_token from redirect hash / query
         const url = result.url;
         const hash = url.split('#')[1] || url.split('?')[1] || '';
         const params = new URLSearchParams(hash);

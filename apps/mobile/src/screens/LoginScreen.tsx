@@ -60,6 +60,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
   // Primary Google OAuth Sign-In
   const handleGoogleSignIn = async () => {
+    // If no GCP Client ID is configured in environment, prompt Google account directly without 401 browser error
+    if (!googleAuthService.hasConfiguredClientId()) {
+      setShowGoogleModal(true);
+      return;
+    }
+
     try {
       setIsLoadingGoogle(true);
       const googleProfile = await googleAuthService.signIn();
@@ -79,7 +85,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           debugOtp: res.debugOtp,
         });
       } else {
-        // Browser session dismissed or environment without client ID: prompt account entry
         setShowGoogleModal(true);
       }
     } catch {
@@ -273,11 +278,11 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <View style={styles.modalHeader}>
-              <GoogleIcon size={24} />
-              <Text style={[styles.modalTitle, { color: colors.text }]}>Google Account</Text>
+              <GoogleIcon size={22} />
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Sign in with Google</Text>
             </View>
             <Text style={[styles.modalDescription, { color: colors.textSecondary }]}>
-              Enter your verified Google Workspace or personal Gmail address to receive your sign-in verification code.
+              Enter your verified Google Workspace or personal Gmail address to receive your 6-digit session authorization code.
             </Text>
 
             <TextInput
@@ -305,7 +310,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
                 style={[styles.modalConfirmBtn, { backgroundColor: colors.primary }]}
                 onPress={handleConfirmGoogleEmail}
               >
-                <Text style={styles.modalConfirmText}>Verify Code</Text>
+                <Text style={styles.modalConfirmText}>Send Verification Passcode</Text>
               </TouchableOpacity>
             </View>
           </View>
