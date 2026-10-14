@@ -6,9 +6,9 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  SafeAreaView,
   ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeStore } from '../store/useThemeStore';
 import { searchService } from '../services/search.service';
 import { SearchEntityType, SearchResultItemDto } from '@lifeos/shared-types';
@@ -122,7 +122,7 @@ export const SearchScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header & Search Bar */}
       <View style={styles.header}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Universal Search</Text>

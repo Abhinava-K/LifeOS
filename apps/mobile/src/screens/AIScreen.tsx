@@ -6,9 +6,10 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
-  SafeAreaView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeStore } from '../store/useThemeStore';
+import { useAuthStore } from '../store/useAuthStore';
 
 interface Message {
   id: string;
@@ -19,12 +20,13 @@ interface Message {
 
 export const AIScreen: React.FC = () => {
   const { colors } = useThemeStore();
+  const { user } = useAuthStore();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       sender: 'assistant',
-      text: 'Hello Jahaan! I am your LifeOS Second Brain. Ask me about your tasks, schedule, recent expenses, or notes.',
+      text: `Hello ${user?.fullName?.split(' ')[0] || 'there'}! I am your LifeOS Second Brain. Ask me about your tasks, schedule, recent expenses, or notes.`,
       timestamp: '09:00 AM',
     },
   ]);
@@ -53,7 +55,7 @@ export const AIScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>🤖 AI Assistant</Text>
         <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>CrewAI • Gemini 1.5 Pro</Text>

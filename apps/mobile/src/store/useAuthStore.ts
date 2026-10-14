@@ -13,18 +13,9 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: {
-    userId: 'usr_jahaan_lead_2026',
-    email: 'jahaan.suthar@lifeos.ai',
-    fullName: 'Jahaan Suthar',
-    role: 'USER' as any,
-  },
-  tokens: {
-    accessToken: 'mock_jwt_access_token_lead',
-    refreshToken: 'mock_jwt_refresh_token_lead',
-    expiresIn: 3600,
-  },
-  isAuthenticated: true,
+  user: null,
+  tokens: null,
+  isAuthenticated: false,
   isLoading: false,
 
   setAuth: (user, tokens) =>

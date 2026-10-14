@@ -5,9 +5,9 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeStore } from '../store/useThemeStore';
 import { useAuthStore } from '../store/useAuthStore';
 
@@ -16,7 +16,7 @@ export const HomeScreen: React.FC = () => {
   const { user } = useAuthStore();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
@@ -27,12 +27,12 @@ export const HomeScreen: React.FC = () => {
               {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
             </Text>
             <Text style={[styles.greetingTitle, { color: colors.text }]}>
-              Good morning, {user?.fullName?.split(' ')[0] || 'Jahaan'} 👋
+              Good morning, {user?.fullName?.split(' ')[0] || 'Explorer'} 👋
             </Text>
           </View>
           <View style={[styles.avatarBadge, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]}>
             <Text style={[styles.avatarText, { color: colors.primaryLight }]}>
-              {user?.fullName?.substring(0, 2).toUpperCase() || 'JS'}
+              {user?.fullName?.substring(0, 2).toUpperCase() || 'ME'}
             </Text>
           </View>
         </View>

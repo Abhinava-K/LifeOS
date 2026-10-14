@@ -4,12 +4,12 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  SafeAreaView,
   TouchableOpacity,
   TextInput,
   Modal,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ExpenseCategory, ExpenseDto } from '@lifeos/shared-types';
 import { useThemeStore } from '../store/useThemeStore';
 
@@ -109,7 +109,7 @@ export const ExpenseScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>💳 Expense Ledger & OCR (REQ-EXP)</Text>
         <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>

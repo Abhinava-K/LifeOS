@@ -106,6 +106,18 @@ export interface GoogleOAuthRequestDto {
   provider: 'google';
 }
 
+export interface SendOtpRequestDto {
+  email: string;
+  fullName?: string;
+  isGoogle?: boolean;
+}
+
+export interface VerifyOtpRequestDto {
+  email: string;
+  otp: string;
+  fullName?: string;
+}
+
 export interface StandardApiResponse<T> {
   success: boolean;
   data?: T;

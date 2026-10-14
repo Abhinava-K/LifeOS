@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
   Switch,
   TextInput,
-  SafeAreaView,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeStore } from '../store/useThemeStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { GoogleServiceType, ProfileVisibility, UserThemePreference } from '@lifeos/shared-types';
@@ -22,7 +22,7 @@ export const ProfileScreen: React.FC = () => {
   const { user, logout } = useAuthStore();
 
   // Profile Form States
-  const [fullName, setFullName] = useState(user?.fullName || 'Parth Patel');
+  const [fullName, setFullName] = useState(user?.fullName || 'LifeOS User');
   const [bio, setBio] = useState('Productivity enthusiast & software engineer');
   const [timezone, setTimezone] = useState('Asia/Kolkata');
   const [currencyCode, setCurrencyCode] = useState('USD');
@@ -41,7 +41,7 @@ export const ProfileScreen: React.FC = () => {
 
   // Phase 5: Google Workspace Integration States
   const [isGoogleConnected, setIsGoogleConnected] = useState(true);
-  const [googleEmail, setGoogleEmail] = useState('abhinava.k2024@vitstudent.ac.in');
+  const [googleEmail, setGoogleEmail] = useState(user?.email || 'user.google@gmail.com');
   const [lastGoogleSync, setLastGoogleSync] = useState<string | null>('1 hour ago');
   const [isSyncingGoogle, setIsSyncingGoogle] = useState(false);
 
@@ -147,20 +147,20 @@ export const ProfileScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
         {/* Profile Card Header */}
         <View style={[styles.profileHeaderCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={[styles.avatarLarge, { backgroundColor: colors.primary }]}>
             <Text style={styles.avatarLargeText}>
-              {fullName?.substring(0, 2).toUpperCase() || 'PP'}
+              {fullName?.substring(0, 2).toUpperCase() || 'US'}
             </Text>
           </View>
           <Text style={[styles.userName, { color: colors.text }]}>{fullName}</Text>
-          <Text style={[styles.userEmail, { color: colors.textMuted }]}>{user?.email || 'parth@lifeos.ai'}</Text>
+          <Text style={[styles.userEmail, { color: colors.textMuted }]}>{user?.email || 'user@lifeos.ai'}</Text>
           <View style={[styles.roleBadge, { backgroundColor: colors.surfaceLight }]}>
-            <Text style={[styles.roleText, { color: colors.primaryLight }]}>Infra & Backend Lead</Text>
+            <Text style={[styles.roleText, { color: colors.primaryLight }]}>{user?.role || 'Verified Member'}</Text>
           </View>
         </View>
 

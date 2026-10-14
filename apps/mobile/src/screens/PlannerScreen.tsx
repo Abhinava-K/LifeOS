@@ -1,12 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeStore } from '../store/useThemeStore';
 
 export const PlannerScreen: React.FC = () => {
   const { colors } = useThemeStore();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>📅 Unified Planner</Text>
         <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>Tasks • Calendar • Habits • Goals</Text>

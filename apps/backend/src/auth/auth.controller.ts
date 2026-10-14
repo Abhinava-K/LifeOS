@@ -14,6 +14,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { GoogleLoginDto, AppleLoginDto } from './dto/oauth-login.dto';
+import { SendOtpDto, VerifyOtpDto } from './dto/otp.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Request } from 'express';
 
@@ -61,6 +62,35 @@ export class AuthController {
     return {
       success: true,
       message: 'Google authentication successful',
+      data,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Post('otp/send')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Request 6-digit OTP verification code (REQ-AUTH-OTP)' })
+  @ApiResponse({ status: 200, description: 'OTP sent successfully' })
+  async sendOtp(@Body() sendOtpDto: SendOtpDto) {
+    const data = await this.authService.sendOtp(sendOtpDto);
+    return {
+      success: true,
+      message: 'Verification code dispatched successfully',
+      data,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Post('otp/verify')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify 6-digit OTP code and authenticate (REQ-AUTH-OTP-VERIFY)' })
+  @ApiResponse({ status: 200, description: 'OTP verified successfully' })
+  @ApiResponse({ status: 401, description: 'Invalid or expired verification code' })
+  async verifyOtp(@Body() verifyOtpDto: VerifyOtpDto) {
+    const data = await this.authService.verifyOtp(verifyOtpDto);
+    return {
+      success: true,
+      message: 'Authentication verified successfully',
       data,
       timestamp: new Date().toISOString(),
     };

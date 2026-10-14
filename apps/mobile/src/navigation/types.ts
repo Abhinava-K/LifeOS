@@ -7,9 +7,17 @@ export type RootTabParamList = {
   Profile: undefined;
 };
 
+export type AuthStackParamList = {
+  Login: undefined;
+  OtpVerify: {
+    email: string;
+    fullName?: string;
+    isGoogle?: boolean;
+    debugOtp?: string;
+  };
+};
+
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
-  Login: undefined;
-  Register: undefined;
 };
