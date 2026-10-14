@@ -18,19 +18,19 @@ export interface ThemeColors {
 }
 
 export const darkPalette: ThemeColors = {
-  background: '#090D16',
-  surface: '#111827',
-  surfaceLight: '#1F2937',
-  border: '#374151',
-  primary: '#6366F1',
-  primaryLight: '#818CF8',
-  accent: '#10B981',
-  text: '#F9FAFB',
-  textSecondary: '#D1D5DB',
-  textMuted: '#9CA3AF',
-  success: '#34D399',
-  warning: '#FBBF24',
-  danger: '#F87171',
+  background: '#07080C',
+  surface: '#0F1117',
+  surfaceLight: '#161922',
+  border: '#222634',
+  primary: '#4F6BFF',
+  primaryLight: '#7088FF',
+  accent: '#00E599',
+  text: '#F0F2F8',
+  textSecondary: '#9DA4B6',
+  textMuted: '#62687A',
+  success: '#00D084',
+  warning: '#FFB020',
+  danger: '#FF4D4D',
 };
 
 export const lightPalette: ThemeColors = {

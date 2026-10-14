@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -21,17 +21,17 @@ import { AuthStackParamList } from '../navigation/types';
 type OtpVerifyScreenProps = NativeStackScreenProps<AuthStackParamList, 'OtpVerify'>;
 
 export const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ route, navigation }) => {
-  const { email, fullName, isGoogle, debugOtp: initialDebugOtp } = route.params;
+  const { email, fullName, isGoogle } = route.params;
   const { colors } = useThemeStore();
   const { setAuth } = useAuthStore();
 
   const [otp, setOtp] = useState('');
-  const [debugOtp, setDebugOtp] = useState(initialDebugOtp || '123456');
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [countdown, setCountdown] = useState(30);
+  const inputRef = useRef<TextInput>(null);
 
-  // Countdown timer for OTP resend
+  // Countdown timer for resend
   useEffect(() => {
     if (countdown <= 0) return;
     const timer = setInterval(() => {
@@ -40,11 +40,11 @@ export const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ route, navigat
     return () => clearInterval(timer);
   }, [countdown]);
 
-  const handleVerifyOtp = async (codeToVerify?: string) => {
+  const handleVerify = async (codeToVerify?: string) => {
     const activeCode = (codeToVerify || otp).trim();
 
     if (activeCode.length !== 6) {
-      Alert.alert('Invalid Code', 'Please enter a valid 6-digit verification code.');
+      Alert.alert('Verification', 'Please enter all 6 digits of your one-time passcode.');
       return;
     }
 
@@ -56,36 +56,68 @@ export const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ route, navigat
         fullName,
       });
 
-      // Commit to authenticated state - triggers RootNavigator switch to Main BottomTabs
+      // Commit to authenticated state -> RootNavigator switches to Main BottomTabs
       setAuth(res.user, res.tokens);
     } catch {
       Alert.alert(
-        'Verification Failed',
-        'The verification code entered is incorrect or expired. You can use 123456 for instant testing.',
+        'Authentication Error',
+        'The verification passcode is incorrect or has expired. Please request a new code.',
       );
+      setOtp('');
+      inputRef.current?.focus();
     } finally {
       setIsVerifying(false);
     }
   };
 
-  const handleResendOtp = async () => {
+  const handleResend = async () => {
     if (countdown > 0) return;
 
     try {
       setIsResending(true);
-      const res = await authService.sendOtp({
+      await authService.sendOtp({
         email,
         fullName,
         isGoogle,
       });
-      setDebugOtp(res.debugOtp);
       setCountdown(30);
-      Alert.alert('Code Sent', `A fresh 6-digit verification code was sent to ${email}`);
+      Alert.alert('Passcode Dispatched', `A fresh 6-digit verification code was sent to ${email}`);
     } catch {
-      Alert.alert('Resend Error', 'Failed to resend code. Please try again.');
+      Alert.alert('Delivery Failed', 'Unable to dispatch a new verification code. Please try again.');
     } finally {
       setIsResending(false);
     }
+  };
+
+  // Render individual digit boxes
+  const renderDigitBoxes = () => {
+    const boxes = [];
+    for (let i = 0; i < 6; i++) {
+      const digit = otp[i] || '';
+      const isCurrent = i === otp.length;
+      const isFilled = Boolean(digit);
+
+      boxes.push(
+        <View
+          key={i}
+          style={[
+            styles.digitBox,
+            {
+              backgroundColor: colors.surfaceLight,
+              borderColor: isCurrent
+                ? colors.primary
+                : isFilled
+                ? colors.border
+                : colors.border + '80',
+            },
+            isCurrent && { borderWidth: 1.5 },
+          ]}
+        >
+          <Text style={[styles.digitText, { color: colors.text }]}>{digit}</Text>
+        </View>,
+      );
+    }
+    return boxes;
   };
 
   return (
@@ -99,96 +131,85 @@ export const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ route, navigat
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Back button */}
+          {/* Back Action */}
           <TouchableOpacity
-            style={[styles.backBtn, { borderColor: colors.border, backgroundColor: colors.surfaceLight }]}
+            style={[styles.backButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
             onPress={() => navigation.goBack()}
           >
-            <Text style={[styles.backBtnText, { color: colors.text }]}>← Back</Text>
+            <Text style={[styles.backButtonText, { color: colors.textSecondary }]}>← Return</Text>
           </TouchableOpacity>
 
           {/* Header */}
           <View style={styles.header}>
-            <View style={[styles.iconBadge, { backgroundColor: colors.primary + '18' }]}>
-              <Text style={styles.icon}>✉️</Text>
+            <View style={[styles.iconCircle, { borderColor: colors.border, backgroundColor: colors.surface }]}>
+              <View style={[styles.innerDot, { backgroundColor: colors.primary }]} />
             </View>
-            <Text style={[styles.title, { color: colors.text }]}>Verify Identity</Text>
-            <Text style={[styles.subtitle, { color: colors.textMuted }]}>
-              {isGoogle ? 'Google Account Verification' : 'One-Time Passcode'}
+            <Text style={[styles.title, { color: colors.text }]}>Security Verification</Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+              {isGoogle ? 'Google Account Passcode' : 'One-Time Passcode'}
             </Text>
-            <Text style={[styles.emailHighlight, { color: colors.primary }]}>{email}</Text>
+            <View style={[styles.emailBadge, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]}>
+              <Text style={[styles.emailText, { color: colors.text }]}>{email}</Text>
+            </View>
           </View>
 
-          {/* Debug / Instant 1-tap chip */}
-          {debugOtp ? (
-            <TouchableOpacity
-              style={[styles.debugChip, { backgroundColor: colors.surfaceLight, borderColor: colors.primary }]}
-              onPress={() => {
-                setOtp(debugOtp);
-                handleVerifyOtp(debugOtp);
-              }}
-            >
-              <Text style={[styles.debugChipLabel, { color: colors.textMuted }]}>
-                DEVELOPER QUICK-FILL (TAP TO APPLY):
-              </Text>
-              <Text style={[styles.debugChipValue, { color: colors.primary }]}>{debugOtp}</Text>
-            </TouchableOpacity>
-          ) : null}
-
-          {/* Form Card */}
+          {/* Verification Box Card */}
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.inputLabel, { color: colors.textMuted }]}>ENTER 6-DIGIT CODE</Text>
+            <Text style={[styles.cardLabel, { color: colors.textMuted }]}>ENTER 6-DIGIT AUTHORIZATION CODE</Text>
 
+            {/* Clickable Area that focuses the hidden TextInput */}
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={() => inputRef.current?.focus()}
+              style={styles.digitContainer}
+            >
+              {renderDigitBoxes()}
+            </TouchableOpacity>
+
+            {/* Hidden Input for Native Keypad */}
             <TextInput
-              style={[
-                styles.otpInput,
-                {
-                  color: colors.text,
-                  backgroundColor: colors.surfaceLight,
-                  borderColor: otp.length === 6 ? colors.primary : colors.border,
-                },
-              ]}
-              placeholder="123456"
-              placeholderTextColor={colors.textMuted}
+              ref={inputRef}
+              style={styles.hiddenInput}
               keyboardType="number-pad"
               maxLength={6}
               value={otp}
               onChangeText={(text) => {
-                setOtp(text);
-                if (text.length === 6) {
-                  handleVerifyOtp(text);
+                const numeric = text.replace(/[^0-9]/g, '');
+                setOtp(numeric);
+                if (numeric.length === 6) {
+                  handleVerify(numeric);
                 }
               }}
               autoFocus
             />
 
-            {/* Verify Button */}
+            {/* Submit Action */}
             <TouchableOpacity
-              style={[styles.verifyBtn, { backgroundColor: colors.primary }]}
-              onPress={() => handleVerifyOtp()}
+              style={[styles.verifyButton, { backgroundColor: colors.primary }]}
+              onPress={() => handleVerify()}
               disabled={isVerifying || otp.length !== 6}
               activeOpacity={0.85}
             >
               {isVerifying ? (
-                <ActivityIndicator color="#FFFFFF" />
+                <ActivityIndicator color="#FFFFFF" size="small" />
               ) : (
-                <Text style={styles.verifyBtnText}>Verify & Proceed to LifeOS</Text>
+                <Text style={styles.verifyButtonText}>Authorize Session</Text>
               )}
             </TouchableOpacity>
 
-            {/* Resend Code Section */}
+            {/* Resend Option */}
             <View style={styles.resendRow}>
               <Text style={[styles.resendLabel, { color: colors.textMuted }]}>
-                Didn't receive the code?{' '}
+                Didn't receive the passcode?{' '}
               </Text>
-              <TouchableOpacity onPress={handleResendOtp} disabled={countdown > 0 || isResending}>
+              <TouchableOpacity onPress={handleResend} disabled={countdown > 0 || isResending}>
                 {isResending ? (
                   <ActivityIndicator size="small" color={colors.primary} />
                 ) : (
                   <Text
                     style={[
                       styles.resendAction,
-                      { color: countdown > 0 ? colors.textMuted : colors.primary },
+                      { color: countdown > 0 ? colors.textMuted : colors.primaryLight },
                     ]}
                   >
                     {countdown > 0 ? `Resend in ${countdown}s` : 'Resend Code'}
@@ -196,6 +217,13 @@ export const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ route, navigat
                 )}
               </TouchableOpacity>
             </View>
+          </View>
+
+          {/* Compliance Info */}
+          <View style={styles.footer}>
+            <Text style={[styles.footerText, { color: colors.textMuted }]}>
+              Passcodes expire in 5 minutes • RFC 6238 Standard
+            </Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -212,107 +240,112 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 32,
     justifyContent: 'center',
   },
-  backBtn: {
+  backButton: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 8,
     borderWidth: 1,
-    marginBottom: 20,
+    marginBottom: 24,
   },
-  backBtnText: {
-    fontSize: 13,
-    fontWeight: '700',
+  backButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
   },
   header: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 28,
   },
-  iconBadge: {
-    width: 64,
-    height: 64,
-    borderRadius: 20,
+  iconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
   },
-  icon: {
-    fontSize: 30,
+  innerDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
   },
   title: {
-    fontSize: 26,
-    fontWeight: '900',
-    letterSpacing: 0.3,
+    fontSize: 24,
+    fontWeight: '800',
+    letterSpacing: 0.4,
   },
   subtitle: {
     fontSize: 13,
     marginTop: 4,
   },
-  emailHighlight: {
-    fontSize: 14,
-    fontWeight: '700',
-    marginTop: 4,
-  },
-  debugChip: {
-    borderRadius: 12,
+  emailBadge: {
+    marginTop: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 16,
     borderWidth: 1,
-    borderStyle: 'dashed',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    marginBottom: 18,
   },
-  debugChipLabel: {
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-  },
-  debugChipValue: {
-    fontSize: 18,
-    fontWeight: '900',
-    letterSpacing: 4,
-    marginTop: 2,
+  emailText: {
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0.2,
   },
   card: {
-    borderRadius: 24,
+    borderRadius: 20,
     borderWidth: 1,
     padding: 24,
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 4,
   },
-  inputLabel: {
-    fontSize: 11,
-    fontWeight: '800',
+  cardLabel: {
+    fontSize: 10,
+    fontWeight: '700',
     letterSpacing: 0.8,
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: 18,
   },
-  otpInput: {
-    borderRadius: 16,
-    borderWidth: 2,
-    paddingVertical: 16,
-    fontSize: 32,
-    fontWeight: '900',
-    letterSpacing: 10,
-    textAlign: 'center',
+  digitContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 22,
   },
-  verifyBtn: {
-    borderRadius: 14,
-    paddingVertical: 16,
+  digitBox: {
+    width: 44,
+    height: 52,
+    borderRadius: 10,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  digitText: {
+    fontSize: 22,
+    fontWeight: '800',
+    fontVariant: ['tabular-nums'],
+  },
+  hiddenInput: {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    opacity: 0.01,
+  },
+  verifyButton: {
+    borderRadius: 12,
+    paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
   },
-  verifyBtnText: {
+  verifyButtonText: {
     color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: 14,
+    fontWeight: '700',
     letterSpacing: 0.3,
   },
   resendRow: {
@@ -322,10 +355,18 @@ const styles = StyleSheet.create({
     marginTop: 18,
   },
   resendLabel: {
-    fontSize: 13,
+    fontSize: 12,
   },
   resendAction: {
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  footer: {
+    marginTop: 28,
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 11,
+    letterSpacing: 0.2,
   },
 });
