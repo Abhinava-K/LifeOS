@@ -10,6 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { CreditCard, Camera, ScanLine } from 'lucide-react-native';
 import { ExpenseCategory, ExpenseDto } from '@lifeos/shared-types';
 import { useThemeStore } from '../store/useThemeStore';
 
@@ -111,7 +112,10 @@ export const ExpenseScreen: React.FC = () => {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>💳 Expense Ledger & OCR (REQ-EXP)</Text>
+        <View style={styles.headerTitleRow}>
+          <CreditCard size={20} color={colors.primary} strokeWidth={2.2} style={{ marginRight: 8 }} />
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Expense Ledger & OCR</Text>
+        </View>
         <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>
           Smart Spend Tracking • Automated Receipt OCR • Budget Analytics
         </Text>
@@ -154,7 +158,8 @@ export const ExpenseScreen: React.FC = () => {
           onPress={() => setIsOcrModalVisible(true)}
           activeOpacity={0.8}
         >
-          <Text style={styles.ocrButtonText}>📷 Scan Receipt with OCR Engine</Text>
+          <Camera size={18} color="#FFFFFF" strokeWidth={2.2} style={{ marginRight: 8 }} />
+          <Text style={styles.ocrButtonText}>Scan Receipt with OCR Engine</Text>
         </TouchableOpacity>
 
         {/* Category Filter Pills */}
@@ -207,7 +212,10 @@ export const ExpenseScreen: React.FC = () => {
       <Modal visible={isOcrModalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={[styles.modalCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>📷 Receipt OCR Scanner</Text>
+            <View style={styles.modalTitleRow}>
+              <ScanLine size={20} color={colors.primary} strokeWidth={2.2} style={{ marginRight: 8 }} />
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Receipt OCR Scanner</Text>
+            </View>
             <Text style={[styles.modalSubtitle, { color: colors.textMuted }]}>
               Paste receipt OCR text or receipt payload below for extraction:
             </Text>
@@ -249,6 +257,7 @@ export const ExpenseScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { padding: 16, borderBottomWidth: 1, alignItems: 'center' },
+  headerTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   headerTitle: { fontSize: 18, fontWeight: '800' },
   headerSubtitle: { fontSize: 12, marginTop: 2, textAlign: 'center' },
   scrollContent: { padding: 16 },
@@ -260,7 +269,7 @@ const styles = StyleSheet.create({
   progressTrack: { height: 8, borderRadius: 4, overflow: 'hidden', marginBottom: 8 },
   progressBar: { height: '100%', borderRadius: 4 },
   progressText: { fontSize: 11, textAlign: 'right' },
-  ocrButton: { padding: 14, borderRadius: 14, alignItems: 'center', marginBottom: 20 },
+  ocrButton: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 14, borderRadius: 14, marginBottom: 20 },
   ocrButtonText: { color: '#FFF', fontWeight: '800', fontSize: 15 },
   sectionTitle: { fontSize: 16, fontWeight: '700', marginBottom: 10 },
   categoryScroll: { flexDirection: 'row', marginBottom: 16 },
@@ -274,7 +283,8 @@ const styles = StyleSheet.create({
   expenseAmount: { fontSize: 16, fontWeight: '800' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', padding: 20 },
   modalCard: { borderRadius: 18, borderWidth: 1, padding: 20 },
-  modalTitle: { fontSize: 18, fontWeight: '800', marginBottom: 4 },
+  modalTitleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
+  modalTitle: { fontSize: 18, fontWeight: '800' },
   modalSubtitle: { fontSize: 12, marginBottom: 12 },
   modalInput: { borderRadius: 10, borderWidth: 1, padding: 12, fontSize: 13, height: 100, textAlignVertical: 'top', marginBottom: 16 },
   modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 10 },

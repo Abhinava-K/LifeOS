@@ -9,6 +9,17 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Search,
+  X,
+  FileText,
+  CheckSquare,
+  Calendar,
+  CreditCard,
+  File,
+  Layers,
+  Zap,
+} from 'lucide-react-native';
 import { useThemeStore } from '../store/useThemeStore';
 import { searchService } from '../services/search.service';
 import { SearchEntityType, SearchResultItemDto } from '@lifeos/shared-types';
@@ -67,24 +78,25 @@ export const SearchScreen: React.FC = () => {
   const getTypeBadge = (type: SearchEntityType) => {
     switch (type) {
       case SearchEntityType.NOTE:
-        return { label: 'NOTE', icon: '📝', bg: '#4338CA' };
+        return { label: 'NOTE', Icon: FileText, color: '#6366F1' };
       case SearchEntityType.TASK:
-        return { label: 'TASK', icon: '✅', bg: '#065F46' };
+        return { label: 'TASK', Icon: CheckSquare, color: '#10B981' };
       case SearchEntityType.EVENT:
-        return { label: 'EVENT', icon: '📅', bg: '#1E40AF' };
+        return { label: 'EVENT', Icon: Calendar, color: '#3B82F6' };
       case SearchEntityType.EXPENSE:
-        return { label: 'EXPENSE', icon: '💳', bg: '#92400E' };
+        return { label: 'EXPENSE', Icon: CreditCard, color: '#F59E0B' };
       case SearchEntityType.DOCUMENT:
-        return { label: 'DOC', icon: '📄', bg: '#374151' };
+        return { label: 'DOC', Icon: File, color: '#8B5CF6' };
       case SearchEntityType.FLASHCARD:
-        return { label: 'CARD', icon: '🧠', bg: '#701A75' };
+        return { label: 'CARD', Icon: Layers, color: '#EC4899' };
       default:
-        return { label: 'ITEM', icon: '🔍', bg: '#374151' };
+        return { label: 'ITEM', Icon: Search, color: colors.textMuted };
     }
   };
 
   const renderResultItem = ({ item }: { item: SearchResultItemDto }) => {
     const badge = getTypeBadge(item.type);
+    const BadgeIcon = badge.Icon;
 
     return (
       <TouchableOpacity
@@ -92,9 +104,10 @@ export const SearchScreen: React.FC = () => {
         activeOpacity={0.7}
       >
         <View style={styles.cardHeader}>
-          <View style={[styles.typeBadge, { backgroundColor: badge.bg }]}>
-            <Text style={styles.typeBadgeText}>
-              {badge.icon} {badge.label}
+          <View style={[styles.typeBadge, { backgroundColor: badge.color + '18', borderColor: badge.color + '33', borderWidth: 1 }]}>
+            <BadgeIcon size={11} color={badge.color} strokeWidth={2.4} style={{ marginRight: 4 }} />
+            <Text style={[styles.typeBadgeText, { color: badge.color }]}>
+              {badge.label}
             </Text>
           </View>
           {item.rrfScore ? (
@@ -131,7 +144,7 @@ export const SearchScreen: React.FC = () => {
         </Text>
 
         <View style={[styles.searchBar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={styles.searchIcon}>🔍</Text>
+          <Search size={18} color={colors.textMuted} strokeWidth={2} style={styles.searchIcon} />
           <TextInput
             style={[styles.searchInput, { color: colors.text }]}
             placeholder="Search anything across LifeOS..."
@@ -142,8 +155,8 @@ export const SearchScreen: React.FC = () => {
             autoCorrect={false}
           />
           {query.length > 0 && (
-            <TouchableOpacity onPress={() => setQuery('')}>
-              <Text style={[styles.clearIcon, { color: colors.textMuted }]}>✕</Text>
+            <TouchableOpacity onPress={() => setQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <X size={16} color={colors.textMuted} strokeWidth={2} />
             </TouchableOpacity>
           )}
         </View>
@@ -208,7 +221,9 @@ export const SearchScreen: React.FC = () => {
         />
       ) : query.trim().length > 0 ? (
         <View style={styles.centered}>
-          <Text style={{ fontSize: 36, marginBottom: 8 }}>🔍</Text>
+          <View style={[styles.emptyIconContainer, { backgroundColor: colors.surface }]}>
+            <Search size={28} color={colors.textMuted} strokeWidth={1.75} />
+          </View>
           <Text style={[styles.emptyTitle, { color: colors.text }]}>No matching items found</Text>
           <Text style={[styles.emptySubtitle, { color: colors.textMuted }]}>
             Try refining your keywords or searching in 'All' categories
@@ -216,7 +231,9 @@ export const SearchScreen: React.FC = () => {
         </View>
       ) : (
         <View style={styles.centered}>
-          <Text style={{ fontSize: 40, marginBottom: 12 }}>⚡</Text>
+          <View style={[styles.emptyIconContainer, { backgroundColor: colors.primary + '18' }]}>
+            <Zap size={28} color={colors.primary} strokeWidth={1.75} />
+          </View>
           <Text style={[styles.emptyTitle, { color: colors.text }]}>Search Across Your Digital Life</Text>
           <Text style={[styles.emptySubtitle, { color: colors.textMuted }]}>
             Type any topic, task, person, amount, or formula to search notes, tasks, calendar, receipts & documents simultaneously.
@@ -255,7 +272,6 @@ const styles = StyleSheet.create({
     height: 48,
   },
   searchIcon: {
-    fontSize: 16,
     marginRight: 8,
   },
   searchInput: {
@@ -308,12 +324,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   typeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
   typeBadgeText: {
-    color: '#FFFFFF',
     fontSize: 10,
     fontWeight: '700',
   },
@@ -339,6 +356,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 32,
+  },
+  emptyIconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   loadingText: {
     marginTop: 8,

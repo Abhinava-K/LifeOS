@@ -9,6 +9,15 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  BookOpen,
+  Search,
+  Layers,
+  FolderArchive,
+  FileText,
+  Lightbulb,
+  Plus,
+} from 'lucide-react-native';
 import { useThemeStore } from '../store/useThemeStore';
 
 interface VaultDoc {
@@ -161,9 +170,12 @@ export const LibraryScreen: React.FC = () => {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>📚 Universal Library & Study Hub</Text>
+        <View style={styles.headerTitleRow}>
+          <BookOpen size={20} color={colors.primary} strokeWidth={2.2} style={{ marginRight: 8 }} />
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Universal Library</Text>
+        </View>
         <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>
-          Notes • Documents Vault • SM-2 Flashcards • Quizzes
+          Documents Vault • SM-2 Flashcards • Knowledge Base
         </Text>
       </View>
 
@@ -224,7 +236,7 @@ export const LibraryScreen: React.FC = () => {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Search Bar */}
         <View style={[styles.searchBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={styles.searchIcon}>🔍</Text>
+          <Search size={16} color={colors.textMuted} strokeWidth={2} style={styles.searchIcon} />
           <TextInput
             style={[styles.searchInput, { color: colors.text }]}
             placeholder="Search notes, documents, and flashcard decks..."
@@ -238,9 +250,12 @@ export const LibraryScreen: React.FC = () => {
         {(activeTab === 'ALL' || activeTab === 'STUDY') && (
           <View style={styles.section}>
             <View style={styles.sectionHeaderRow}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                🧠 SM-2 Spaced Repetition Deck
-              </Text>
+              <View style={styles.titleWithIcon}>
+                <Layers size={18} color={colors.primary} strokeWidth={2} style={{ marginRight: 8 }} />
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                  SM-2 Spaced Repetition
+                </Text>
+              </View>
               <View style={[styles.dueBadge, { backgroundColor: colors.primaryLight + '20' }]}>
                 <Text style={[styles.dueBadgeText, { color: colors.primary }]}>
                   Card {activeCardIndex + 1} of {flashcards.length}
@@ -266,9 +281,12 @@ export const LibraryScreen: React.FC = () => {
                     <Text style={[styles.answerText, { color: colors.text }]}>
                       {currentCard.answer}
                     </Text>
-                    <Text style={[styles.explanationText, { color: colors.textMuted }]}>
-                      💡 {currentCard.explanation}
-                    </Text>
+                    <View style={styles.explanationRow}>
+                      <Lightbulb size={13} color={colors.primaryLight} strokeWidth={2} style={{ marginRight: 6, marginTop: 2 }} />
+                      <Text style={[styles.explanationText, { color: colors.textMuted }]}>
+                        {currentCard.explanation}
+                      </Text>
+                    </View>
                   </View>
                 ) : (
                   <TouchableOpacity
@@ -335,14 +353,18 @@ export const LibraryScreen: React.FC = () => {
         {(activeTab === 'ALL' || activeTab === 'DOCS') && (
           <View style={styles.section}>
             <View style={styles.sectionHeaderRow}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                📁 Document Vault (REQ-DOC)
-              </Text>
+              <View style={styles.titleWithIcon}>
+                <FolderArchive size={18} color={colors.primary} strokeWidth={2} style={{ marginRight: 8 }} />
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                  Document Vault
+                </Text>
+              </View>
               <TouchableOpacity
                 style={[styles.uploadBtn, { backgroundColor: colors.primary }]}
                 onPress={handleSimulatedUpload}
               >
-                <Text style={styles.uploadBtnText}>+ Upload (≤25MB)</Text>
+                <Plus size={13} color="#FFFFFF" strokeWidth={2.5} style={{ marginRight: 4 }} />
+                <Text style={styles.uploadBtnText}>Upload (≤25MB)</Text>
               </TouchableOpacity>
             </View>
 
@@ -380,7 +402,10 @@ export const LibraryScreen: React.FC = () => {
         {/* PINNED NOTES OVERVIEW */}
         {activeTab === 'ALL' && (
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>📝 Pinned Knowledge Base</Text>
+            <View style={[styles.titleWithIcon, { marginBottom: 12 }]}>
+              <FileText size={18} color={colors.primary} strokeWidth={2} style={{ marginRight: 8 }} />
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Pinned Knowledge Base</Text>
+            </View>
             <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <Text style={[styles.noteTitle, { color: colors.text }]}>
                 LifeOS Architecture Decisions (ADR-001)
@@ -412,6 +437,11 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     alignItems: 'center',
+  },
+  headerTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerTitle: {
     fontSize: 18,
@@ -447,7 +477,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   searchIcon: {
-    fontSize: 16,
     marginRight: 8,
   },
   searchInput: {
@@ -462,6 +491,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
+  },
+  titleWithIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  explanationRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginTop: 8,
   },
   sectionTitle: {
     fontSize: 16,
@@ -571,6 +609,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   uploadBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 10,

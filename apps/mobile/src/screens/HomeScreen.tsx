@@ -8,6 +8,14 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Sparkles,
+  ArrowRight,
+  CheckCircle2,
+  Flame,
+  CreditCard,
+  Check,
+} from 'lucide-react-native';
 import { useThemeStore } from '../store/useThemeStore';
 import { useAuthStore } from '../store/useAuthStore';
 
@@ -27,30 +35,33 @@ export const HomeScreen: React.FC = () => {
               {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
             </Text>
             <Text style={[styles.greetingTitle, { color: colors.text }]}>
-              Good morning, {user?.fullName?.split(' ')[0] || 'Explorer'} 👋
+              Good morning, {user?.fullName?.split(' ')[0] || 'User'}
             </Text>
           </View>
           <View style={[styles.avatarBadge, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]}>
-            <Text style={[styles.avatarText, { color: colors.primaryLight }]}>
-              {user?.fullName?.substring(0, 2).toUpperCase() || 'ME'}
+            <Text style={[styles.avatarText, { color: colors.primary }]}>
+              {user?.fullName?.substring(0, 2).toUpperCase() || 'US'}
             </Text>
           </View>
         </View>
 
         {/* AI Daily Briefing Widget */}
-        <View style={[styles.card, styles.aiCard, { backgroundColor: '#131B2E', borderColor: '#2E3A59' }]}>
+        <View style={[styles.card, styles.aiCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={styles.aiBadgeRow}>
-            <View style={styles.sparkleIconWrapper}>
-              <Text style={styles.sparkleIcon}>🧠</Text>
+            <View style={[styles.sparkleIconWrapper, { backgroundColor: colors.primary + '18' }]}>
+              <Sparkles size={14} color={colors.primary} />
             </View>
-            <Text style={styles.aiBadgeText}>AI SECOND BRAIN BRIEFING</Text>
+            <Text style={[styles.aiBadgeText, { color: colors.primary }]}>COGNITIVE BRIEFING</Text>
           </View>
-          <Text style={styles.aiBriefQuote}>
-            "Focus on the database indexing and Thin Client core navigation today. You have 3 deep work blocks scheduled."
+          <Text style={[styles.aiBriefQuote, { color: colors.text }]}>
+            "Focus on database indexing and Thin Client core navigation today. You have 3 deep work blocks scheduled."
           </Text>
           <View style={styles.aiActionRow}>
             <TouchableOpacity style={[styles.aiActionButton, { backgroundColor: colors.primary }]}>
-              <Text style={styles.aiActionText}>Ask AI Assistant ⚡</Text>
+              <View style={styles.aiActionInner}>
+                <Text style={styles.aiActionText}>Ask Assistant</Text>
+                <ArrowRight size={13} color="#FFFFFF" style={{ marginLeft: 6 }} />
+              </View>
             </TouchableOpacity>
           </View>
         </View>
@@ -60,7 +71,7 @@ export const HomeScreen: React.FC = () => {
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Today's Schedule</Text>
             <TouchableOpacity>
-              <Text style={[styles.sectionLink, { color: colors.primaryLight }]}>View All</Text>
+              <Text style={[styles.sectionLink, { color: colors.primary }]}>View All</Text>
             </TouchableOpacity>
           </View>
 
@@ -87,21 +98,27 @@ export const HomeScreen: React.FC = () => {
         <View style={styles.gridRow}>
           {/* Tasks Card */}
           <View style={[styles.gridCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={styles.gridIcon}>✅</Text>
+            <View style={styles.gridIconWrapper}>
+              <CheckCircle2 size={18} color={colors.accent} />
+            </View>
             <Text style={[styles.gridNumber, { color: colors.text }]}>4 / 6</Text>
             <Text style={[styles.gridLabel, { color: colors.textMuted }]}>Tasks Done</Text>
           </View>
 
           {/* Habit Streaks */}
           <View style={[styles.gridCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={styles.gridIcon}>🔥</Text>
+            <View style={styles.gridIconWrapper}>
+              <Flame size={18} color={colors.warning} />
+            </View>
             <Text style={[styles.gridNumber, { color: colors.text }]}>12 Days</Text>
             <Text style={[styles.gridLabel, { color: colors.textMuted }]}>Habit Streak</Text>
           </View>
 
           {/* Budget Snapshot */}
           <View style={[styles.gridCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={styles.gridIcon}>💳</Text>
+            <View style={styles.gridIconWrapper}>
+              <CreditCard size={18} color={colors.primary} />
+            </View>
             <Text style={[styles.gridNumber, { color: colors.text }]}>$248</Text>
             <Text style={[styles.gridLabel, { color: colors.textMuted }]}>Spend Logged</Text>
           </View>
@@ -112,22 +129,24 @@ export const HomeScreen: React.FC = () => {
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>High Priority Tasks (Q1)</Text>
             <TouchableOpacity>
-              <Text style={[styles.sectionLink, { color: colors.primaryLight }]}>Matrix</Text>
+              <Text style={[styles.sectionLink, { color: colors.primary }]}>Matrix</Text>
             </TouchableOpacity>
           </View>
 
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <View style={styles.taskRow}>
-              <View style={[styles.checkbox, { borderColor: colors.primary }]} />
+              <View style={[styles.checkbox, { borderColor: colors.primary, backgroundColor: colors.primary + '14' }]}>
+                <Check size={12} color={colors.primary} />
+              </View>
               <Text style={[styles.taskTitle, { color: colors.text }]}>
                 Configure PostgreSQL 15 & pgvector extension
               </Text>
             </View>
             <View style={[styles.divider, { backgroundColor: colors.border }]} />
             <View style={styles.taskRow}>
-              <View style={[styles.checkbox, { borderColor: colors.primary }]} />
+              <View style={[styles.checkbox, { borderColor: colors.border }]} />
               <Text style={[styles.taskTitle, { color: colors.text }]}>
-                Build React Native Thin Client 5-tab core
+                Build React Native Thin Client 6-tab core
               </Text>
             </View>
           </View>
@@ -153,26 +172,27 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   greetingSubtitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   },
   greetingTitle: {
     fontSize: 22,
     fontWeight: '800',
     marginTop: 2,
+    letterSpacing: 0.2,
   },
   avatarBadge: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    borderWidth: 1.5,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
   },
   card: {
@@ -182,40 +202,43 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   aiCard: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#6366F1',
+    padding: 18,
   },
   aiBadgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   sparkleIconWrapper: {
-    marginRight: 6,
-  },
-  sparkleIcon: {
-    fontSize: 14,
+    width: 26,
+    height: 26,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
   },
   aiBadgeText: {
-    color: '#818CF8',
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '800',
     letterSpacing: 1,
   },
   aiBriefQuote: {
-    color: '#E0E7FF',
     fontSize: 14,
     lineHeight: 20,
     fontWeight: '500',
   },
   aiActionRow: {
-    marginTop: 12,
+    marginTop: 14,
     flexDirection: 'row',
   },
   aiActionButton: {
-    paddingVertical: 8,
+    paddingVertical: 7,
     paddingHorizontal: 14,
-    borderRadius: 20,
+    borderRadius: 8,
+  },
+  aiActionInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   aiActionText: {
     color: '#FFFFFF',
@@ -232,29 +255,30 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: '700',
+    letterSpacing: 0.2,
   },
   sectionLink: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
   },
   scheduleItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
   timeIndicator: {
-    width: 4,
+    width: 3,
     height: 32,
     borderRadius: 2,
-    marginRight: 12,
+    marginRight: 14,
   },
   scheduleDetails: {
     flex: 1,
   },
   scheduleTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
   },
   scheduleSubtitle: {
@@ -263,7 +287,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    marginVertical: 8,
+    marginVertical: 10,
   },
   gridRow: {
     flexDirection: 'row',
@@ -275,12 +299,11 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 14,
     borderWidth: 1,
-    padding: 12,
+    padding: 14,
     alignItems: 'center',
   },
-  gridIcon: {
-    fontSize: 20,
-    marginBottom: 6,
+  gridIconWrapper: {
+    marginBottom: 8,
   },
   gridNumber: {
     fontSize: 16,
@@ -294,17 +317,19 @@ const styles = StyleSheet.create({
   taskRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: 4,
   },
   checkbox: {
     width: 18,
     height: 18,
     borderRadius: 5,
-    borderWidth: 2,
+    borderWidth: 1.5,
     marginRight: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   taskTitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
     flex: 1,
   },

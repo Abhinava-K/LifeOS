@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text } from 'react-native';
+import { Home, Bot, Search, Calendar, BookOpen, User } from 'lucide-react-native';
 import { RootTabParamList } from './types';
 import { HomeScreen } from '../screens/HomeScreen';
 import { AIScreen } from '../screens/AIScreen';
@@ -23,15 +23,16 @@ export const BottomTabs: React.FC = () => {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
-          height: 64,
+          height: 60,
           paddingBottom: 8,
           paddingTop: 6,
         },
-        tabBarActiveTintColor: colors.primaryLight,
+        tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: '600',
+          letterSpacing: 0.2,
         },
       }}
     >
@@ -40,15 +41,15 @@ export const BottomTabs: React.FC = () => {
         component={HomeScreen}
         options={{
           tabBarLabel: 'Home',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>🏠</Text>,
+          tabBarIcon: ({ color }) => <Home size={19} color={color} strokeWidth={2} />,
         }}
       />
       <Tab.Screen
         name="AI"
         component={AIScreen}
         options={{
-          tabBarLabel: 'AI Brain',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>🤖</Text>,
+          tabBarLabel: 'Assistant',
+          tabBarIcon: ({ color }) => <Bot size={19} color={color} strokeWidth={2} />,
         }}
       />
       <Tab.Screen
@@ -56,7 +57,7 @@ export const BottomTabs: React.FC = () => {
         component={SearchScreen}
         options={{
           tabBarLabel: 'Search',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>🔍</Text>,
+          tabBarIcon: ({ color }) => <Search size={19} color={color} strokeWidth={2} />,
         }}
       />
       <Tab.Screen
@@ -64,7 +65,7 @@ export const BottomTabs: React.FC = () => {
         component={PlannerScreen}
         options={{
           tabBarLabel: 'Planner',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>📅</Text>,
+          tabBarIcon: ({ color }) => <Calendar size={19} color={color} strokeWidth={2} />,
         }}
       />
       <Tab.Screen
@@ -72,7 +73,7 @@ export const BottomTabs: React.FC = () => {
         component={LibraryScreen}
         options={{
           tabBarLabel: 'Library',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>📚</Text>,
+          tabBarIcon: ({ color }) => <BookOpen size={19} color={color} strokeWidth={2} />,
         }}
       />
       <Tab.Screen
@@ -80,7 +81,7 @@ export const BottomTabs: React.FC = () => {
         component={ProfileScreen}
         options={{
           tabBarLabel: 'Profile',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>👤</Text>,
+          tabBarIcon: ({ color }) => <User size={19} color={color} strokeWidth={2} />,
         }}
       />
     </Tab.Navigator>

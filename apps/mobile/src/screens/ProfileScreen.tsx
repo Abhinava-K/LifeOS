@@ -10,6 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Download, RefreshCw, LogOut, Trash2 } from 'lucide-react-native';
 import { useThemeStore } from '../store/useThemeStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { GoogleServiceType, ProfileVisibility, UserThemePreference } from '@lifeos/shared-types';
@@ -350,8 +351,9 @@ export const ProfileScreen: React.FC = () => {
 
             {/* GDPR Export */}
             <TouchableOpacity style={styles.menuActionRow} onPress={handleExportData} disabled={isExporting}>
+              <Download size={16} color={colors.text} strokeWidth={2} style={{ marginRight: 10 }} />
               <Text style={[styles.menuActionText, { color: colors.text }]}>
-                {isExporting ? 'Exporting Archive...' : '📥 Export Personal Data (GDPR Art. 20)'}
+                {isExporting ? 'Exporting Archive...' : 'Export Personal Data (GDPR Art. 20)'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -413,11 +415,14 @@ export const ProfileScreen: React.FC = () => {
                   backgroundColor: colors.primary,
                   paddingVertical: 10,
                   borderRadius: 10,
+                  flexDirection: 'row',
                   alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
+                <RefreshCw size={15} color="#FFFFFF" strokeWidth={2.2} style={{ marginRight: 8 }} />
                 <Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 13 }}>
-                  {isSyncingGoogle ? 'Synchronizing...' : '🔄 Sync Google Workspace Now'}
+                  {isSyncingGoogle ? 'Synchronizing...' : 'Sync Google Workspace Now'}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -454,13 +459,15 @@ export const ProfileScreen: React.FC = () => {
           <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>ACCOUNT ACTIONS</Text>
           <View style={[styles.menuCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <TouchableOpacity style={styles.menuActionRow} onPress={logout}>
-              <Text style={[styles.menuActionText, { color: colors.warning }]}>🚪 Sign Out</Text>
+              <LogOut size={16} color={colors.warning} strokeWidth={2} style={{ marginRight: 10 }} />
+              <Text style={[styles.menuActionText, { color: colors.warning }]}>Sign Out</Text>
             </TouchableOpacity>
 
             <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
             <TouchableOpacity style={styles.menuActionRow} onPress={handleDeleteAccount}>
-              <Text style={[styles.menuActionText, { color: colors.danger }]}>🗑️ Delete Account & Data (Right to Erasure)</Text>
+              <Trash2 size={16} color={colors.danger} strokeWidth={2} style={{ marginRight: 10 }} />
+              <Text style={[styles.menuActionText, { color: colors.danger }]}>Delete Account & Data (Right to Erasure)</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -557,6 +564,8 @@ const styles = StyleSheet.create({
   },
   menuActionRow: {
     paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   menuActionText: {
     fontSize: 15,
