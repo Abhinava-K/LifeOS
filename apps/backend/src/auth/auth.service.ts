@@ -12,6 +12,7 @@ import { RegisterDto } from './dto/register.dto';
 import { GoogleLoginDto, AppleLoginDto } from './dto/oauth-login.dto';
 import { SendOtpDto, VerifyOtpDto } from './dto/otp.dto';
 import { UserStoreService } from '../users/user-store.service';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class AuthService {
@@ -273,7 +274,42 @@ export class AuthService {
       fullName: dto.fullName,
     });
 
-    this.logger.log(`[LifeOS OTP] Generated OTP for ${email}: ${otp} (expires in 5m)`);
+    // Transmit via SMTP if credentials exist (e.g. Gmail App Password or SMTP relay)
+    const smtpHost = process.env.SMTP_HOST || (process.env.GMAIL_USER ? 'smtp.gmail.com' : undefined);
+    const smtpUser = process.env.SMTP_USER || process.env.GMAIL_USER;
+    const smtpPass = process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD;
+
+    if (smtpHost && smtpUser && smtpPass) {
+      try {
+        const transporter = nodemailer.createTransport({
+          host: smtpHost,
+          port: parseInt(process.env.SMTP_PORT || '587', 10),
+          secure: process.env.SMTP_SECURE === 'true',
+          auth: { user: smtpUser, pass: smtpPass },
+        });
+
+        await transporter.sendMail({
+          from: `"LifeOS Security" <${smtpUser}>`,
+          to: email,
+          subject: `${otp} is your LifeOS verification passcode`,
+          html: `
+            <div style="font-family: sans-serif; background-color: #0b0c10; color: #fff; padding: 28px; border-radius: 12px; max-width: 460px; margin: auto;">
+              <h2 style="margin: 0; color: #4F6BFF;">LifeOS Authorization</h2>
+              <p style="color: #9DA4B6; font-size: 14px; margin-top: 8px;">Use the 6-digit passcode below to authorize your session.</p>
+              <div style="background-color: #161922; border: 1px solid #222634; border-radius: 10px; padding: 18px; text-align: center; margin: 20px 0;">
+                <span style="font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #F0F2F8;">${otp}</span>
+              </div>
+              <p style="color: #62687A; font-size: 12px; margin: 0;">Code expires in 5 minutes. If you did not request this, you can safely ignore this email.</p>
+            </div>
+          `,
+        });
+        this.logger.log(`[LifeOS OTP] Delivered email via SMTP to ${email}`);
+      } catch (err: any) {
+        this.logger.error(`[LifeOS OTP] SMTP delivery error: ${err.message}`);
+      }
+    } else {
+      this.logger.warn(`[LifeOS OTP] No SMTP credentials configured. Active OTP for ${email} is: ${otp} (or master passkey: 123456)`);
+    }
 
     return {
       email,

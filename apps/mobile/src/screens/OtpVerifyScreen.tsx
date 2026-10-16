@@ -21,7 +21,7 @@ import { AuthStackParamList } from '../navigation/types';
 type OtpVerifyScreenProps = NativeStackScreenProps<AuthStackParamList, 'OtpVerify'>;
 
 export const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ route, navigation }) => {
-  const { email, fullName, isGoogle } = route.params;
+  const { email, fullName, isGoogle, debugOtp } = route.params;
   const { colors } = useThemeStore();
   const { setAuth } = useAuthStore();
 
@@ -152,6 +152,27 @@ export const OtpVerifyScreen: React.FC<OtpVerifyScreenProps> = ({ route, navigat
               <Text style={[styles.emailText, { color: colors.text }]}>{email}</Text>
             </View>
           </View>
+
+          {/* Active Passcode Helper Banner */}
+          {debugOtp ? (
+            <TouchableOpacity
+              style={[
+                styles.codeBanner,
+                { backgroundColor: colors.surfaceLight, borderColor: colors.primary + '55' },
+              ]}
+              onPress={() => {
+                setOtp(debugOtp);
+                handleVerify(debugOtp);
+              }}
+            >
+              <Text style={[styles.codeBannerLabel, { color: colors.textMuted }]}>
+                LOCAL SESSION PASSCODE (TAP TO APPLY):
+              </Text>
+              <Text style={[styles.codeBannerCode, { color: colors.primaryLight }]}>
+                {debugOtp}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
 
           {/* Verification Box Card */}
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -316,6 +337,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 22,
+  },
+  codeBanner: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    marginBottom: 18,
+  },
+  codeBannerLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.6,
+  },
+  codeBannerCode: {
+    fontSize: 20,
+    fontWeight: '900',
+    letterSpacing: 6,
+    marginTop: 4,
   },
   digitBox: {
     width: 44,
