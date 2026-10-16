@@ -12,8 +12,10 @@ export interface GoogleUserProfile {
   verifiedEmail?: boolean;
 }
 
-// Configurable client ID via environment variable
-const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID || '';
+// Configurable client ID via environment variable or active GCP project
+const GOOGLE_CLIENT_ID =
+  process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID ||
+  '1052691199246-tk8kt8hv4ib4snvc7d99e0pqkr0fn2ls.apps.googleusercontent.com';
 
 export const googleAuthService = {
   /**
